@@ -72,74 +72,73 @@ A Tabela~\ref{tab:a_table_formatacao_de_texto} mostra  informações do modelo d
 \setlength\extrarowheight{2pt}
 \begin{tabularx}{\linewidth}{>{\RaggedRight}p{3cm}|>{\arraybackslash}X}
 
-\caption[Formatação do texto]{Formatação do texto \showfont}
-\label{tab:a_table_formatacao_de_texto} \\
-\hline
-\endfirsthead
+    \caption[Formatação do texto]{Formatação do texto \showfont}
+    \label{tab:a_table_formatacao_de_texto}                                                        \\
+    \hline
+    \endfirsthead
 
-% How to set font size of footnotes correctly in memoir?
-% https://tex.stackexchange.com/questions/213927/how-to-set-font-size-of-footnotes-correctly-in-memoir
-\multicolumn{2}{p{\dimexpr\textwidth-2\tabcolsep\relax}}{\ufsccaptionsize\tablename~\thetable:
-Formatação do texto (continuação) \showfont} \\
-\hline
-\endhead
+    % How to set font size of footnotes correctly in memoir?
+    % https://tex.stackexchange.com/questions/213927/how-to-set-font-size-of-footnotes-correctly-in-memoir
+    \multicolumn{2}{p{\dimexpr\textwidth-2\tabcolsep\relax}}{\ufsccaptionsize\tablename~\thetable:
+    Formatação do texto (continuação) \showfont}                                                   \\
+    \hline
+    \endhead
 
-% Set multicolumn width to default table width
-% https://tex.stackexchange.com/questions/99326/set-multicolumn-width-to-default-table-width
-\hline
-\multicolumn{2}{p{\dimexpr\textwidth-2\tabcolsep\relax}}{\footnotesize continua na próxima página\protect\englishword{\showfont}}
-\endfoot
+    % Set multicolumn width to default table width
+    % https://tex.stackexchange.com/questions/99326/set-multicolumn-width-to-default-table-width
+    \hline
+    \multicolumn{2}{p{\dimexpr\textwidth-2\tabcolsep\relax}}{\footnotesize continua na próxima página\protect\englishword{\showfont}}
+    \endfoot
 
-\hline
-\multicolumn{2}{p{\dimexpr\textwidth-2\tabcolsep\relax}}{\fonte{O autor -- \showfont} }
-\endlastfoot
-    Cor                          & Branco - \englishword{\showfont}                                 \\ \hline
-    Formato do papel             & A4                                                               \\ \hline
-    Gramatura                    & 75                                                               \\ \hline
-    Impressão                    & Frente e verso                                                   \\ \hline
-    Margens                      & Direita e superior 3, Inferior e esquerda: 2.                    \\ \hline
-    Cabeçalho                    & 0,7                                                              \\ \hline
-    Rodapé                       & 0,7                                                              \\ \hline
-    Paginação                    & Externa                                                          \\ \hline
-    Alinhamento vertical         & Superior                                                         \\ \hline
-    Alinhamento do texto         & Justificado                                                      \\ \hline
-    Fonte sugerida               & Times New Roman                                                  \\ \hline
+    \hline
+    \multicolumn{2}{p{\dimexpr\textwidth-2\tabcolsep\relax}}{\fonte{O autor -- \showfont} }
+    \endlastfoot
+    Cor                          & Branco - \englishword{\showfont}                                \\ \hline
+    Formato do papel             & A4                                                              \\ \hline
+    Gramatura                    & 75                                                              \\ \hline
+    Impressão                    & Frente e verso                                                  \\ \hline
+    Margens                      & Direita e superior 3, Inferior e esquerda: 2.                   \\ \hline
+    Cabeçalho                    & 0,7                                                             \\ \hline
+    Rodapé                       & 0,7                                                             \\ \hline
+    Paginação                    & Externa                                                         \\ \hline
+    Alinhamento vertical         & Superior                                                        \\ \hline
+    Alinhamento do texto         & Justificado                                                     \\ \hline
+    Fonte sugerida               & Times New Roman                                                 \\ \hline
     Tamanho da fonte             & 12 para o texto incluindo os títulos das seções e subseções.
-                                   As citações com mais de três linhas as legendas das ilustrações
-                                   e tabelas, fonte 10.                                             \\ \hline
-    Espaçamento entre linhas     & Um e meio (1,5)                                                  \\ \hline
-    Espaçamento entre parágrafos & Anterior 0,0; Posterior 0,0                                      \\ \hline
+    As citações com mais de três linhas as legendas das ilustrações
+    e tabelas, fonte 10.                                                                           \\ \hline
+    Espaçamento entre linhas     & Um e meio (1,5)                                                 \\ \hline
+    Espaçamento entre parágrafos & Anterior 0,0; Posterior 0,0                                     \\ \hline
     Numeração da seção           & As seções  primárias devem  começar  sempre em páginas ímpares.
-                                   Deixar um espaço (simples) entre o título da seção e o texto e
-                                   entre o texto e o título da subseção.                            \\ \hline
-
+    Deixar um espaço (simples) entre o título da seção e o texto e
+    entre o texto e o título da subseção.                                                          \\ \hline
 \end{tabularx}
 
 
-\begin{figure}
-    \caption{Exemplo de figura}
-    \label{fig:ex01}
-    \centering
-    \includegraphics[width=\linewidth]{pictures/ex01}
-\fonte{o autor -- \showfont}
-\end{figure}
+% \begin{figure}
+%     \caption{Exemplo de figura}
+%     \label{fig:ex01}
+%     \centering
+%     \includegraphics[width=\linewidth]{pictures/ex01}
+% \fonte{o autor -- \showfont}
+% \end{figure}
 
 
-Por exemplo, na \figref{fig:ex01}, tem-se...
+% Por exemplo, na \figref{fig:ex01}, tem-se...
 
-\begin{figure}
-    \caption{Exemplo de aquisição}
-    \label{fig:tek0009}
-    \centering
-    \includegraphics[width=0.9\linewidth]{pictures/tek0009}
-    \fonte{o autor -- \showfont}
-\end{figure}
+% \begin{figure}
+%     \caption{Exemplo de aquisição}
+%     \label{fig:tek0009}
+%     \centering
+%     \includegraphics[width=0.9\linewidth]{pictures/tek0009}
+%     \fonte{o autor -- \showfont}
+% \end{figure}
 
 Este documento e seu código-fonte são exemplos de referência de uso da classe
 \textsf{abntex2} e do pacote \textsf{abntex2cite}. O documento
 exemplifica a elaboração de trabalho acadêmico (tese, dissertação e outros do
 gênero) produzido conforme a ABNT NBR 14724:2011 \emph{Informação e documentação
-- Trabalhos acadêmicos - Apresentação}.
+    - Trabalhos acadêmicos - Apresentação}.
 
 A expressão ``Modelo Canônico'' é utilizada para indicar que \abnTeX{} não é
 modelo específico de nenhuma universidade ou instituição, mas que implementa tão

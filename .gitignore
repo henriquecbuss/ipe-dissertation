@@ -1,5 +1,6 @@
 main.loq
 main.pdf
+main.out.ps
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

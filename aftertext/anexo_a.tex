@@ -14,13 +14,13 @@
 % https://tex.stackexchange.com/questions/36526/multiple-language-document-babel-selectlanguage-vs-begin-endotherlanguage
 \begin{otherlanguage*}{english}
 
-% An environment for setting \emergencystretch locally
-% https://tex.stackexchange.com/questions/84510/an-environment-for-setting-emergencystretch-locally
-{
-    \setlength{\emergencystretch}{10pt}
-    \section[English guidelines for publication]
-    {English guidelines for publication - TITLE HERE (14 PT TYPE SIZE, UPPERCASE, BOLD, CENTERED)}
-}
+    % An environment for setting \emergencystretch locally
+    % https://tex.stackexchange.com/questions/84510/an-environment-for-setting-emergencystretch-locally
+    {
+        \setlength{\emergencystretch}{10pt}
+        \section[English guidelines for publication]
+         {English guidelines for publication - TITLE HERE (14 PT TYPE SIZE, UPPERCASE, BOLD, CENTERED)}
+    }
     \noindent\textbf{Abstract:}
     The objective of this document is to instruct the authors about the preparation of the
     manuscript for its submission to the Revista Eletrônica de Potência (Brazilian Power Electronics
@@ -40,6 +40,6 @@ interwordstretch: \the\fontdimen3\font
 emergencystretch: \the\emergencystretch\par\relax
 
 
-\modifiedincludepdf{-}{ArtigoSOBRAEP}{pictures/SOBRAEP.pdf}{0.9}
+% \modifiedincludepdf{-}{ArtigoSOBRAEP}{pictures/SOBRAEP.pdf}{0.9}
 
 
