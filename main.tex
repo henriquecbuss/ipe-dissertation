@@ -108,7 +108,7 @@ section=TITLE, % Título de seções em caixa alta
 
 % TODO: Adicionar data de defesa
 % \data{\lang{30 of march of}{30 de março de} 2019}
-\data{TODO - Adicionar data de defesa}
+\data{(TODO - Adicionar data de defesa)}
 
 \preambulo{\lang%
     {%
@@ -127,15 +127,17 @@ section=TITLE, % Título de seções em caixa alta
 \useshorthands{~}\defineshorthand{~=}{\hyp{}}
 
 % TODO - Adicionar palavras chave
-\palavraschaveufsc{palavraschaveingles}   {Keyword 1}
-\palavraschaveufsc{palavraschaveportugues}{Palavra~=Chave 1}
+% \palavraschaveufsc{palavraschaveingles}   {Keyword 1}
+% \palavraschaveufsc{palavraschaveportugues}{Palavra~=Chave 1}
 
-\palavraschaveufsc{palavraschaveingles}   {Keyword 2}
-\palavraschaveufsc{palavraschaveportugues}{Palavra~=Chave 2}
+% \palavraschaveufsc{palavraschaveingles}   {Keyword 2}
+% \palavraschaveufsc{palavraschaveportugues}{Palavra~=Chave 2}
 
-\palavraschaveufsc{palavraschaveingles}   {Keyword 3}
-\palavraschaveufsc{palavraschaveportugues}{Palavra~=Chave 3}
+% \palavraschaveufsc{palavraschaveingles}   {Keyword 3}
+% \palavraschaveufsc{palavraschaveportugues}{Palavra~=Chave 3}
 
+\palavraschaveufsc{palavraschaveingles}   {(TODO - Adicionar keyword 1)}
+\palavraschaveufsc{palavraschaveportugues}{(TODO - Adicionar palavra-chave 1)}
 
 \hypersetup
 {
@@ -224,32 +226,11 @@ section=TITLE, % Título de seções em caixa alta
 \setlength\midchapskip{20pt}
 \setlength\afterchapskip{20pt}
 
-% PARTE
-\ifforcedinclude\else\part{\lang{Research}{Pesquisa}}\fi
-\label{primeira_parte}
-
-% Introdução (exemplo de capítulo sem numeração, mas presente no Sumário)
 \include{chapters/intro}
 
-% Capitulo com exemplos de comandos inseridos de arquivo externo
 \include{chapters/chapter_1}
 
-% Capitulo de revisão de literatura
 \include{chapters/chapter_2}
-
-% Primeiro capitulo de Resultados
-\include{chapters/chapter_3}
-
-% PARTE
-\ifforcedinclude\else\part{\lang{Implementation}{Implementação}}\fi
-\label{segunda_parte}
-
-% Segundo capitulo de Resultados
-\include{chapters/chapter_4}
-
-% Finaliza a parte no bookmark do PDF para que se inicie o bookmark na raiz
-% e adiciona espaço de parte no Sumário
-\phantompart
 
 % Conclusão (outro exemplo de capítulo sem numeração e presente no sumário)
 \include{chapters/conclusion}
@@ -272,37 +253,30 @@ section=TITLE, % Título de seções em caixa alta
 \printbibliography[title=\lang{REFERENCES}{REFERÊNCIAS}]
 \endgroup
 
-% Glossário, consulte o manual da classe abntex2 para orientações sobre o glossário.
-% \ifforcedinclude\else\glossary\fi
+% TODO - Adicionar apêndices
+% % Inicia os apêndices
+% \begin{apendicesenv}
+%     % Imprime uma página indicando o início dos apêndices
+%     \ifforcedinclude\else\partapendices\fi
+%     \setlength\beforechapskip{50pt}
+%     \setlength\midchapskip{20pt}
+%     \setlength\afterchapskip{20pt}
 
-% Inicia os apêndices
-\begin{apendicesenv}
-    % Imprime uma página indicando o início dos apêndices
-    \ifforcedinclude\else\partapendices\fi
-    \setlength\beforechapskip{50pt}
-    \setlength\midchapskip{20pt}
-    \setlength\afterchapskip{20pt}
+%     \include{aftertext/apendice_a}
+% \end{apendicesenv}
 
-    \include{aftertext/apendice_a}
-\end{apendicesenv}
+% TODO - Adicionar anexos
+% % Inicia os anexos
+% \begin{anexosenv}
+%     % Imprime uma página indicando o início dos anexos
+%     \ifforcedinclude\else\partanexos\fi
+%     \setlength\beforechapskip{50pt}
+%     \setlength\midchapskip{20pt}
+%     \setlength\afterchapskip{20pt}
 
-% Inicia os anexos
-\begin{anexosenv}
-    % Imprime uma página indicando o início dos anexos
-    \ifforcedinclude\else\partanexos\fi
-    \setlength\beforechapskip{50pt}
-    \setlength\midchapskip{20pt}
-    \setlength\afterchapskip{20pt}
-
-    \include{aftertext/anexo_a}
-    \include{aftertext/anexo_b}
-\end{anexosenv}
-
-% INDICE REMISSIVO
-\ifforcedinclude\else
-    \phantompart
-    \printindex
-\fi
+%     \include{aftertext/anexo_a}
+%     \include{aftertext/anexo_b}
+% \end{anexosenv}
 
 \end{document}
 

@@ -206,7 +206,6 @@
 % Nomes constantes do abnTeX2 em portugues (definicoes padroes)
 \newcommand{\folhaderostoname}{Folha de rosto}
 \newcommand{\epigraphname}{Ep\'igrafe}
-\newcommand{\dedicatorianame}{Dedicat\'oria}
 \newcommand{\errataname}{Errata}
 \newcommand{\agradecimentosname}{Agradecimentos}
 \newcommand{\anexoname}{ANEXO}
@@ -239,7 +238,6 @@
   %% adjusts names from abnTeX2
   \renewcommand{\folhaderostoname}{Title page}
   \renewcommand{\epigraphname}{Epigraph}
-  \renewcommand{\dedicatorianame}{Dedication}
   \renewcommand{\errataname}{Errata sheet}
   \renewcommand{\agradecimentosname}{Acknowledgements}
   \renewcommand{\anexoname}{ANNEX}
@@ -798,18 +796,6 @@
 % ---
 
 % ---
-% Ficha catalografica (Dados internacionais de
-% catalogação-na-publicacao)
-\newenvironment{fichacatalografica}{%
-    \thispagestyle{empty}
-    \begin{SingleSpacing}
-      \ABNTEXfontereduzida
-}{%
-    \end{SingleSpacing}%
-}%
-% ---
-
-% ---
 % Errata
 \newenvironment{errata}[1][\errataname]{%
    \pretextualchapter{#1}
@@ -823,15 +809,6 @@
    \PRIVATEbookmarkthis{#1}%
    \begin{Spacing}{1.0}
 }{\end{Spacing}\PRIVATEclearpageifneeded}
-% ---
-
-% ---
-% Dedicatoria
-\newenvironment{dedicatoria}[1][]{%
-   \ifthenelse{\equal{#1}{}}{%
-    \PRIVATEbookmarkthis{\dedicatorianame}
-    }{\pretextualchapter{#1}}
-  }{\PRIVATEclearpageifneeded}
 % ---
 
 % ---
