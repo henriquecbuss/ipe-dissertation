@@ -2,8 +2,8 @@
 
 % ELEMENTOS PRÉ-TEXTUAIS
 \ifforcedinclude\else
-    % Fix the \textpreliminarycontents not showing up when @twoside is disabled
-    \newif\ifufscThesisXisMemoirTwoSidesEnabled
+% Fix the \textpreliminarycontents not showing up when @twoside is disabled
+\newif\ifufscThesisXisMemoirTwoSidesEnabled
 
     % https://tex.stackexchange.com/questions/360785/how-do-i-check-if-a-document-is-oneside-or-twoside
     \ifthenelse{\boolean{@twoside}}{%
@@ -113,51 +113,51 @@
 
 % Some tables of contents
 \ifforcedinclude\else
-{
-    % https://tex.stackexchange.com/questions/179506/disable-colorlinks-locally-or-just-for-the-toc
-    \hypersetup{hidelinks}
+    {
+        % https://tex.stackexchange.com/questions/179506/disable-colorlinks-locally-or-just-for-the-toc
+        \hypersetup{hidelinks}
 
-    % inserir lista de figuras
-    \ifforcedinclude\else\cleardoublepage\fi
-    % https://tex.stackexchange.com/questions/234398/list-of-figures-and-tables-when-there-are-no-figures-or-tables
-    \whenlistisnotempty{\listfigurename}{%
-        \addtotextpreliminarycontent{\listfigurename}
-        % https://tex.stackexchange.com/questions/121879/remove-spacing-between-per-chapter-figures-in-lof
-        {\renewcommand{\addvspace}[1]{}
-        \listoffigures*}
-    }{\pdfbookmark[0]{\listfigurename}{lof}}
+        % inserir lista de figuras
+        \ifforcedinclude\else\cleardoublepage\fi
+        % https://tex.stackexchange.com/questions/234398/list-of-figures-and-tables-when-there-are-no-figures-or-tables
+        \whenlistisnotempty{\listfigurename}{%
+            \addtotextpreliminarycontent{\listfigurename}
+            % https://tex.stackexchange.com/questions/121879/remove-spacing-between-per-chapter-figures-in-lof
+            {\renewcommand{\addvspace}[1]{}
+                \listoffigures*}
+        }{\pdfbookmark[0]{\listfigurename}{lof}}
 
-    % inserir lista de quadros
-    \ifforcedinclude\else\cleardoublepage\fi
-    % https://tex.stackexchange.com/questions/234398/list-of-figures-and-tables-when-there-are-no-figures-or-tables
-    \whenlistisnotempty{\listofquadrosname}{%
-        \addtotextpreliminarycontent{\listofquadrosname}
-        % https://tex.stackexchange.com/questions/121879/remove-spacing-between-per-chapter-figures-in-lof
-        {\renewcommand{\addvspace}[1]{}
-        \listofquadros*}
-    }{\pdfbookmark[0]{\listofquadrosname}{loq}}
+        % inserir lista de quadros
+        \ifforcedinclude\else\cleardoublepage\fi
+        % https://tex.stackexchange.com/questions/234398/list-of-figures-and-tables-when-there-are-no-figures-or-tables
+        \whenlistisnotempty{\listofquadrosname}{%
+            \addtotextpreliminarycontent{\listofquadrosname}
+            % https://tex.stackexchange.com/questions/121879/remove-spacing-between-per-chapter-figures-in-lof
+            {\renewcommand{\addvspace}[1]{}
+                \listofquadros*}
+        }{\pdfbookmark[0]{\listofquadrosname}{loq}}
 
-    % inserir lista de tabelas
-    \ifforcedinclude\else\cleardoublepage\fi
-    % https://tex.stackexchange.com/questions/234398/list-of-figures-and-tables-when-there-are-no-figures-or-tables
-    \whenlistisnotempty{\listtablename}{%
-        \addtotextpreliminarycontent{\listtablename}
-        % https://tex.stackexchange.com/questions/121879/remove-spacing-between-per-chapter-figures-in-lof
-        {\renewcommand{\addvspace}[1]{}
-        \listoftables*}
-    }{\pdfbookmark[0]{\listtablename}{lot}}
+        % inserir lista de tabelas
+        \ifforcedinclude\else\cleardoublepage\fi
+        % https://tex.stackexchange.com/questions/234398/list-of-figures-and-tables-when-there-are-no-figures-or-tables
+        \whenlistisnotempty{\listtablename}{%
+            \addtotextpreliminarycontent{\listtablename}
+            % https://tex.stackexchange.com/questions/121879/remove-spacing-between-per-chapter-figures-in-lof
+            {\renewcommand{\addvspace}[1]{}
+                \listoftables*}
+        }{\pdfbookmark[0]{\listtablename}{lot}}
 
-    % inserir códigos fonte (List of Listings `lol`)
-    % https://tex.stackexchange.com/questions/511519/latex-keeps-showing-minted-environment-as-figures-instead-of-listening/511579#511579
-    \ifforcedinclude\else\cleardoublepage\fi
-    % https://tex.stackexchange.com/questions/234398/list-of-figures-and-tables-when-there-are-no-figures-or-tables
-    \whenlistisnotempty{\lstlistlistingname}{%
-        \addtotextpreliminarycontent{\lstlistlistingname}
-        % https://tex.stackexchange.com/questions/121879/remove-spacing-between-per-chapter-figures-in-lof
-        {\renewcommand{\addvspace}[1]{}
-        \lstlistoflistings*}
-    }{\pdfbookmark[0]{\lstlistlistingname}{lol}}
-}
+        % inserir códigos fonte (List of Listings `lol`)
+        % https://tex.stackexchange.com/questions/511519/latex-keeps-showing-minted-environment-as-figures-instead-of-listening/511579#511579
+        \ifforcedinclude\else\cleardoublepage\fi
+        % https://tex.stackexchange.com/questions/234398/list-of-figures-and-tables-when-there-are-no-figures-or-tables
+        \whenlistisnotempty{\lstlistlistingname}{%
+            \addtotextpreliminarycontent{\lstlistlistingname}
+            % https://tex.stackexchange.com/questions/121879/remove-spacing-between-per-chapter-figures-in-lof
+            {\renewcommand{\addvspace}[1]{}
+                \lstlistoflistings*}
+        }{\pdfbookmark[0]{\lstlistlistingname}{lol}}
+    }
 \fi
 
 
@@ -186,8 +186,8 @@
 
         % https://tex.stackexchange.com/questions/49887/overfull-hbox-warning-for-toc-entries-when-using-memoir-documentclass
         % \makeatletter
-            % \renewcommand{\@pnumwidth}{2em}
-            % \renewcommand{\@tocrmarg}{3em}
+        % \renewcommand{\@pnumwidth}{2em}
+        % \renewcommand{\@tocrmarg}{3em}
         % \makeatother
 
         % https://tex.stackexchange.com/questions/57544/memoir-mysterious-overfull-hbox-in-toc-when-mathptmx-is-used
