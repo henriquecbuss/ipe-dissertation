@@ -1,0 +1,308 @@
+%https://github.com/SublimeText/LaTeXTools/issues/1439
+%!TEX output_directory=latexcache
+
+% You can build this using the command:
+% latexmk -pdf -jobname=output -output-directory=cache -aux-directory=cache -pdflatex="pdflatex -interaction=nonstopmode" -use-make main.tex
+
+% When the bibliography includes a cyclic reference to another bibliography,
+% you need to run `pdflatex` 5 times on the following order:
+% 1. `pdflatex`,
+% 2. `biber`,
+% 3. `pdflatex`
+% 4. `pdflatex`
+% 5. `pdflatex`
+% 6. `biber`
+% 7. `pdflatex`
+
+% Monograph LaTeX Template for UFSC based on:
+% 1. https://github.com/royertiago/tcc
+% 2. http://portal.bu.ufsc.br/normalizacao/
+% 3. https://github.com/evandrocoan/ufscthesisx
+% 4. http://www.latextemplates.com/template/simple-sectioned-essay
+
+% Initially translated from Portuguese with help of https://github.com/omegat-org/omegat <Computer Assisted Translation of LaTeX document>
+% https://tex.stackexchange.com/questions/313732/computer-assisted-translation-of-latex-document
+
+% Allows you to write your thesis both in English and Portuguese
+% https://tex.stackexchange.com/questions/5076/is-it-possible-to-keep-my-translation-together-with-original-text
+\newif\ifenglish\englishfalse
+\newif\ifadvisor\advisorfalse
+
+% Uncomment the line `\englishtrue` to set the document default language to English
+% \englishtrue
+\advisortrue
+
+% https://tex.stackexchange.com/questions/131002/how-to-expand-ifthenelse-so-that-it-can-be-used-in-parshape
+\newcommand{\lang}[2]{\ifenglish#1\else#2\fi}
+\newcommand{\advisor}[2]{\ifadvisor#1\else#2\fi}
+
+% https://tex.stackexchange.com/questions/385895/how-to-make-passoptionstopackage-add-the-option-as-the-last
+% https://tex.stackexchange.com/questions/484400/changing-the-cleveref-package-language-conjunction-definition
+% https://tex.stackexchange.com/questions/516058/why-isnt-my-biblatex-language-changing-when-passing-the-language-on-my-document
+\ifenglish
+    \PassOptionsToPackage{brazil,main=english,spanish,french}{babel}
+\else
+    \PassOptionsToPackage{main=brazil,english,spanish,french}{babel}
+\fi
+
+% Simple alias for English and Portuguese words
+% https://tex.stackexchange.com/questions/513019/argument-of-bbltempd-has-an-extra
+\newcommand{\brazilword}[1]{\protect\foreignlanguage{brazil}{#1}}
+\newcommand{\englishword}[1]{\protect\foreignlanguage{english}{#1}}
+
+% Allow you to write `Evandro's house` in latex as `Evandro\s house` instead of `Evandro\textquotesingle{}s house`
+% https://tex.stackexchange.com/questions/31091/space-after-latex-commands
+\newcommand{\s}[0]{\textquotesingle{}s\xspace}
+\newcommand{\q}[0]{\textquotesingle{}\xspace}
+
+% Uncomment the following line if you want to use other biblatex settings
+% \PassOptionsToPackage{style=numeric,repeatfields=true,backend=biber,backref=true,citecounter=true}{biblatex}
+\documentclass[
+\lang{english}{brazilian,brazil}, % https://tex.stackexchange.com/questions/484400/changing-the-cleveref-package-language-conjunction-definition
+12pt, % Padrão UFSC para versão final
+a4paper, % Padrão UFSC para versão final
+oneside, % Impressão nos dois lados da folha
+chapter=TITLE, % Título de capítulos em caixa alta
+section=TITLE, % Título de seções em caixa alta
+]{setup/ufscthesisx}
+
+% Utilize o arquivo aftertext/references.bib para incluir sua bibliografia.
+% http://tug.ctan.org/tex-archive/macros/latex/contrib/cleveref/cleveref.pdf
+\addbibresource{aftertext/references.bib}
+
+% https://www.overleaf.com/learn/latex/Inserting_Images
+\graphicspath{{pictures/}}
+
+\autor{\brazilword{Henrique da Cunha Buss}}
+\titulo{\lang{Ipe Programming Language}{Linguagem de Programação Ipe}}
+
+\orientador[\lang{Supervisor}{Orientador(a)}]{\brazilword{Maicon Rafael Zatelli}, \lang{Phd.}{Dr.}}
+
+\coordenador[\lang{Coordinator}{Coordenador(a)}]{\brazilword{Renato Cislaghi}, \lang{Phd.}{Dr.}}
+
+\local{\brazilword{Florianópolis, Santa Catarina} -- \lang{Brazil}{Brasil}}
+
+\ano{2022}
+\biblioteca{\lang{University Library}{Biblioteca Universitária}}
+
+\instituicaosigla{UFSC}
+\instituicao{\brazilword{Universidade Federal de Santa Catarina}}
+
+\tipotrabalho{\lang{Bachelor\s Thesis}{Trabalho de Conclusão de Curso}}
+
+\formacao{\lang
+    {Bachelor of Science degree in Computer Science}
+    {Bacharel em Ciências da Computação}%
+}
+\programa{\lang
+    {Undergraduate Program in Computer Science}
+    {Programa de Graduação em Ciências da Computação}%
+}
+
+\centro{\lang
+    {INE -- Department of Informatics and Statistics, CTC -- Technological Center}
+    {INE -- Departamento de Informática e Estatística, CTC -- Centro Tecnológico}
+}
+
+\campus{\brazilword{Campus Reitor João David Ferreira Lima}}
+
+% TODO: Adicionar data de defesa
+% \data{\lang{30 of march of}{30 de março de} 2019}
+\data{TODO - Adicionar data de defesa}
+
+\preambulo{\lang%
+    {%
+        \imprimirtipotrabalho~submitted to the \imprimirprograma~of
+        \imprimirinstituicao~for degree acquirement in \imprimirformacao.%
+    }{%
+        \imprimirtipotrabalho~submetido ao \imprimirprograma~da
+        \imprimirinstituicao~para a obtenção do Grau de \imprimirformacao.%
+    }%
+}
+
+% Allows you to use ~= instead of `\hyp{}`
+% https://tex.stackexchange.com/questions/488008/how-to-create-an-alternative-to-shortcut-or-hyp
+% https://tex.stackexchange.com/questions/405718/depending-on-babel-language-setting-i-get-biblatex-error-argument-of-language
+% https://tex.stackexchange.com/questions/340661/argument-of-languageactivearg-has-an-extra-i-use-includegraphics-and-r
+\useshorthands{~}\defineshorthand{~=}{\hyp{}}
+
+% TODO - Adicionar palavras chave
+\palavraschaveufsc{palavraschaveingles}   {Keyword 1}
+\palavraschaveufsc{palavraschaveportugues}{Palavra~=Chave 1}
+
+\palavraschaveufsc{palavraschaveingles}   {Keyword 2}
+\palavraschaveufsc{palavraschaveportugues}{Palavra~=Chave 2}
+
+\palavraschaveufsc{palavraschaveingles}   {Keyword 3}
+\palavraschaveufsc{palavraschaveportugues}{Palavra~=Chave 3}
+
+
+\hypersetup
+{
+    pdfsubject={Thesis' Abstract},
+    pdfcreator={LaTeX with abnTeX2 for UFSC},
+    pdftitle={\imprimirtitulo},
+    pdfauthor={\imprimirautor},
+    pdfkeywords={\lang{\palavraschaveinglessemitem}{\palavraschaveportuguessemitem}},
+}
+
+% Altere o arquivo 'settings.tex' para incluir customizações de aparência da sua tese
+\input{settings.tex}
+
+% When writing a large document, it is sometimes useful to work on selected sections of the document
+% to speed up compilation time: https://en.wikibooks.org/wiki/TeX/includeonly
+\newif\ifforcedinclude\forcedincludefalse
+
+% \addtoincludeonly{beforetext/agradecimentos}
+% \addtoincludeonly{beforetext/epigrafe}
+% \addtoincludeonly{beforetext/fichacatalografica}
+% \addtoincludeonly{beforetext/folhadeaprovacao}
+% \addtoincludeonly{beforetext/resumos}
+% \addtoincludeonly{beforetext/siglas}
+% \addtoincludeonly{beforetext/simbolos}
+
+% Part 1
+% \addtoincludeonly{chapters/introduction}
+% \addtoincludeonly{chapters/motivation}
+% \addtoincludeonly{chapters/beautifiers}
+
+% Part 2
+\addtoincludeonly{chapters/object_beautifier}
+% \addtoincludeonly{chapters/conclusion}
+% \addtoincludeonly{aftertext/aftertext}
+
+% Control whether the full document will be generated
+% Note: It will also generate severals errors like the following, which can be ignored
+%       Latexmk: Missing input file: 'chapters/test.aux'
+%
+% You can make latex stop generate these errors, if you generate a full version
+% of the document, before uncommenting these lines.
+%
+% Uncomment these two lines, to only partially generate the document
+% \doincludeonly
+% \forcedincludetrue
+
+
+% https://tex.stackexchange.com/questions/85113/xrightarrow-text
+\makeatletter
+\newcommand{\xRightarrow}[2][]{\ext@arrow 0359\Rightarrowfill@{#1}{#2}}
+\newcommand{\xLeftarrow}[2][]{\ext@arrow 0359\Leftarrowfill@{#1}{#2}}
+\makeatother
+
+% https://tex.stackexchange.com/questions/32208/footnote-runs-onto-second-page
+\interfootnotelinepenalty=10000
+
+% Disable the empty pages automatically put by memoir class, except the ones by \cleardoublepage
+\ifforcedinclude\openany\else\fi
+
+% https://tex.stackexchange.com/questions/171999/overfull-hbox-in-biblatex
+% https://tex.stackexchange.com/questions/499457/why-my-document-is-not-hyphenation-on-words-starting-with-upper-case-letter-i
+\emergencystretch=5em
+
+% https://tex.stackexchange.com/questions/23313/how-can-i-reduce-padding-after-figure
+% https://tex.stackexchange.com/questions/499580/how-to-keep-my-default-floating-environment-spacing-before-them-while-reducing
+% \xpretocmd{\figure}{\setlength{\belowcaptionskip}{-10pt}}{}{}
+
+
+\begin{document}
+% FIXME: Comment this after finishing the thesis, so you can start fixing the \flushbottom vs \raggedbottom
+% https://tex.stackexchange.com/questions/65355/flushbottom-vs-raggedbottom
+\raggedbottom
+
+% https://tex.stackexchange.com/questions/4705/double-space-between-sentences
+\frenchspacing
+
+% Uncomment this to put a ←← | ← (Go To Top/Go Back) on each section header
+\advisor{}{\addGoToSummary}
+
+% ELEMENTOS PRÉ-TEXTUAIS
+\input{beforetext/beforetext.tex}
+
+% ELEMENTOS TEXTUAIS
+\textual
+\setlength\beforechapskip{50pt}
+\setlength\midchapskip{20pt}
+\setlength\afterchapskip{20pt}
+
+% PARTE
+\ifforcedinclude\else\part{\lang{Research}{Pesquisa}}\fi
+\label{primeira_parte}
+
+% Introdução (exemplo de capítulo sem numeração, mas presente no Sumário)
+\include{chapters/intro}
+
+% Capitulo com exemplos de comandos inseridos de arquivo externo
+\include{chapters/chapter_1}
+
+% Capitulo de revisão de literatura
+\include{chapters/chapter_2}
+
+% Primeiro capitulo de Resultados
+\include{chapters/chapter_3}
+
+% PARTE
+\ifforcedinclude\else\part{\lang{Implementation}{Implementação}}\fi
+\label{segunda_parte}
+
+% Segundo capitulo de Resultados
+\include{chapters/chapter_4}
+
+% Finaliza a parte no bookmark do PDF para que se inicie o bookmark na raiz
+% e adiciona espaço de parte no Sumário
+\phantompart
+
+% Conclusão (outro exemplo de capítulo sem numeração e presente no sumário)
+\include{chapters/conclusion}
+
+% ELEMENTOS PÓS-TEXTUAIS
+\postextual
+\setlength\beforechapskip{0pt}
+\setlength\midchapskip{15pt}
+\setlength\afterchapskip{15pt}
+
+% Referências bibliográficas
+\begingroup
+% https://tex.stackexchange.com/questions/163559/how-to-modify-line-spacing-per-entry-of-bibliography
+% https://tex.stackexchange.com/questions/19105/how-can-i-put-more-space-between-bibliography-entries-biblatex
+\setlength\bibitemsep{\baselineskip}
+\advisor{}{\linespread{1.18}\selectfont}
+
+% https://tex.stackexchange.com/questions/17128/using-bibtex-to-make-a-list-of-references-without-having-citations-in-the-body
+% \nocite{*}
+\printbibliography[title=\lang{REFERENCES}{REFERÊNCIAS}]
+\endgroup
+
+% Glossário, consulte o manual da classe abntex2 para orientações sobre o glossário.
+% \ifforcedinclude\else\glossary\fi
+
+% Inicia os apêndices
+\begin{apendicesenv}
+    % Imprime uma página indicando o início dos apêndices
+    \ifforcedinclude\else\partapendices\fi
+    \setlength\beforechapskip{50pt}
+    \setlength\midchapskip{20pt}
+    \setlength\afterchapskip{20pt}
+
+    \include{aftertext/apendice_a}
+\end{apendicesenv}
+
+% Inicia os anexos
+\begin{anexosenv}
+    % Imprime uma página indicando o início dos anexos
+    \ifforcedinclude\else\partanexos\fi
+    \setlength\beforechapskip{50pt}
+    \setlength\midchapskip{20pt}
+    \setlength\afterchapskip{20pt}
+
+    \include{aftertext/anexo_a}
+    \include{aftertext/anexo_b}
+\end{anexosenv}
+
+% INDICE REMISSIVO
+\ifforcedinclude\else
+    \phantompart
+    \printindex
+\fi
+
+\end{document}
+
