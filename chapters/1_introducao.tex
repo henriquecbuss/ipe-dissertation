@@ -1,0 +1,109 @@
+\phantomsection
+
+\chapter{Introdução}
+\phantomsection
+
+Hoje em dia, a maior parte do mundo depende de aplicativos, sejam eles \textit{mobile},
+\textit{web} ou \textit{desktop}. A maior parte desses aplicativos depende de uma aplicação
+\textit{backend} para guardar dados, conversar com outras aplicações, realizar
+pagamentos. Aplicações modernas permitem que tenhamos acesso a bancos, entretenimento,
+redes sociais, \textit{e-commerce}, e muito mais.
+
+% TODO - Add state of JS or similar?
+Nos últimos anos, os desenvolvedores de \textit{software} têm sido atraídos cada vez mais
+ao paradigma de programação funcional. Em contraste com o paradigma de orientação
+a objetos, o paradigma funcional visa simplificar o modelo mental dos programadores,
+focando em funções puras, imutabilidade, e composição de funções. Grandes linguagens
+de programação orientadas a objetos também estão indo na direção da programação funcional,
+como Java, JavaScript, C\#, e Python.
+
+O paradigma funcional não é algo concreto - é um conjunto de ideias que podem ser
+adotadas em partes. Enquanto existem linguagens que implementam
+algumas ideias da programação funcional (como as mencionadas acima), outras
+tentam implementar o máximo possível - comumente chamadas de \textit{linguagens puras},
+% TODO - Add a source
+ou \textit{linguagens puramente funcionais}. Não existe uma definição exata para
+o que é uma linguagem puramente funcional, mas elas geralmente têm alguns recursos,
+como \textit{pattern matching}, funções puras (sem efeitos colaterais, como acesso
+ao sistema de arquivos, ou mostrar uma mensagem na tela), tipagem forte e estática,
+e inferência de tipos. Alguns exemplos de linguagens puramente funcionais são
+\textit{Haskell} e \textit{Elm}.
+
+Linguagens de programação geralmente são criadas para um propósito específico. Por
+exemplo, \textit{JavaScript} foi criada para melhorar a experiência dos usuários
+na \textit{web}. \textit{Elm} foi criada para simplificar a criação de aplicativos
+\textit{web}, utilizando programação funcional para diminuir erros em tempo de
+execução, e aumentar a produtividade dos desenvolvedores. Neste trabalho, vamos
+explorar algumas das linguagens de programação utilizadas para criar aplicativos
+\textit{backend} e, inspirados por \textit{Elm}, vamos criar
+\textit{Ipe}\footnote{\textit{Elm} significa Olmo (uma árvore) em inglês. Ipê é uma árvore brasileira. Para simplificar o uso em inglês, vamos usar o nome \textit{Ipe}, sem acento.},
+uma linguagem de programação puramente funcional, desenvolvida especificamente para
+desenvolver aplicativos \textit{backend}, com o objetivo de simplificar o desenvolvimento
+e diminuir a quantidade de erros em tempo de execução.
+
+\section{Objetivos}
+
+Com a devida contextualização, os objetivos deste trabalho são:
+
+\subsection{Objetivos Gerais}
+
+Analisar algumas linguagens de programação utilizadas para criar aplicativos
+\textit{backend}, para coletar algumas práticas comuns, além de identificar
+possíveis problemas ou dificuldades. Com isso, vamos ter uma base
+para criar \textit{Ipe}, com o objetivo de testar o paradigma funcional para o
+desenvolvimento de aplicações \textit{backend}.
+
+\subsection{Objetivos Específicos}
+
+Para cumprir o objetivo geral, precisamos cumprir os seguintes objetivos específicos:
+
+\begin{enumerate}
+      \item Definir os requisitos para uma aplicação \textit{backend}, para servir
+            de modelo.
+      \item Implementar esses requisitos em algumas linguagens de programação,
+            procurando por padrões, boas práticas, e dificuldades.
+      \item Definir a linguagem \textit{Ipe} e criar um compilador para ela.
+      \item Implementar os requisitos em \textit{Ipe}, para comparar com as
+            implementações descritas no item 2.
+\end{enumerate}
+
+
+\section{Escopo do Trabalho}
+
+Por questões de limitação de tempo, a aplicação modelo será bem simples, e não
+necessariamente representará uma aplicação real. Além disso, \textit{Ipe} é apenas
+uma prova de conceito. Não é o objetivo deste trabalho criar uma linguagem de
+programação completa, com otimizações, ferramentas, e bibliotecas. O objetivo é
+explorar as ideias funcionais no desenvolvimento \textit{backend}. Por conta disso,
+a linguagem \textit{Ipe} não deve ser usada no mundo real, em projetos reais.
+
+O compilador de \textit{Ipe} deve funcionar em sistema operacional macOS, e pode
+não funcionar em outros sistemas.
+
+\section{Método de Pesquisa}
+
+Para cumprir os objetivos propostos, o desenvolvimento é dividido em 3 fases, que
+são explicadas a seguir:
+
+\subsection{Trabalhos Relacionados}
+
+Para termos noção do que outras linguagens fazem para o desenvolvimento de
+aplicações \textit{backend}, vamos explorar algumas linguagens de programação
+ranqueadas como mais populares em índices como o índice TIOBE, e analisar algumas
+linguagens que inspiraram ou influenciaram no desenvolvimento de \textit{Ipe}.
+
+\subsection{Implementação}
+
+Nesta fase, vamos de fato implementar \textit{Ipe} - seu \textit{parser}, compilador
+e tudo o que for necessário para executar programas escritos em \textit{Ipe}.
+Vamos discutir decisões de sintaxe, funções padrões, estrutura de projetos.
+
+Mostraremos como usar \textit{Ipe}, descrevendo estruturas de controle, sistema
+de tipos, estruturas de dados, funções.
+
+\subsection{Uso em Aplicações}
+
+Vamos desenvolver a aplicação modelo utilizando \textit{Ipe}, além de outras
+pequenas aplicações de exemplo. Vamos discutir as vantagens e desvantagens de
+usar \textit{Ipe} para desenvolver aplicações \textit{backend}, e comparar os
+resultados obtidos com \textit{Ipe} e os resultados obtidos com outras linguagens.
