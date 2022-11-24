@@ -1,4 +1,72 @@
 \phantomsection
 
-\chapter{Método de Pesquisa}
+\chapter{Fundamentação Teórica}
 \phantomsection
+
+Ipe será uma linguagem de programação de alto nível. Isso significa que, em algum
+momento, código Ipe (linguagem fonte), deve ser transformado para algo que
+computadores entendam (linguagem alvo). Esse processo se chama compilação, e é
+feito por um programa chamado compilador. No caso deste trabalho, a linguagem
+alvo é Javascript, por ser uma linguagem com ampla adoção no mercado. Quando a
+linguagem alvo também é uma linguagem de alto nível, como é o caso de Javascript,
+o processo de compilação é chamado de transpilação.
+
+Compiladores geralmente funcionam com uma série de etapas. Primeiramente, o
+código fonte é analisado, de forma a garantir que o código fonte é válido de
+acordo com a definição da linguagem fonte. Depois disso, opcionalmente, são
+aplicadas transformações no código. Por exemplo, o compilador pode realizar
+otimizações, ou remover código não utilizado. Por fim, o código fonte é
+transformado para a linguagem alvo. Vamos discutir cada uma dessas etapas em
+maiores detalhes nas seções a seguir.
+
+\section{Análise de código fonte}
+
+A análise de código fonte é a primeira etapa do processo de compilação, e se
+baseia na \textit{gramática} da linguagem. A gramática de uma linguagem é uma lista
+de regras que dita. Em qualquer uma das etapas, se o compilador encontrar um erro,
+ele deve abortar o processo de compilação e emitir uma mensagem de erro.
+
+A análise de código fonte geralmente é dividida em três etapas, descritas a seguir.
+
+\subsection{Análise léxica}
+
+A análise léxica é encarregada de dividir o código fonte em \textit{tokens}. Um
+token é uma sequência de caracteres que possui um significado. Por exemplo, a
+palavra \textit{if} é um token, assim como o símbolo \textit{+}. A análise léxica
+é responsável por identificar esses tokens, e gerar uma lista deles.
+
+
+\subsection{Análise sintática}
+
+A análise sintática recebe como entrada a lista de tokens gerada pela análise
+léxica, e verifica se a sequência de tokens é válida de acordo com a gramática da
+linguagem.
+
+\subsection{Análise semântica}
+
+A análise semântica usa os dados obtidos pelas etapas anteriores para verificar se
+o código fonte é válido de acordo com a semântica da linguagem. Por exemplo, é
+nessa etapa em que o compilador realiza a checagem de tipos, e verifica se todas
+as variáveis usadas no programa foram declaradas.
+
+
+\section{Transformações de código}
+
+A análise de código fonte gera dados sobre o programa fonte (tabelas e árvores que
+representam o programa). Durante o processo de compilação, é possível realizar
+transformações no código fonte, de forma a otimizar o programa, ou remover código
+não utilizado. Por simplicidade, Ipe não fará nenhuma otimização.
+
+
+\section{Geração de código}
+
+A etapa de geração de código é a etapa final do processo de compilação. Nessa
+etapa, o compilador gera o código alvo a partir dos dados gerados pelas etapas
+anteriores. No caso de Ipe, o código alvo é Javascript. Ou seja, vamos usar os dados
+obtidos nas etapas anteriores para traduzir o código fonte (escrito em Ipe) para
+código Javascript. Para isso, mapeamos cada instrução da linguagem Ipe para uma
+instrução equivalente em Javascript.
+
+Como o objetivo da linguagem é ser uma linguagem de programação para \textit{backend},
+geraremos código compatível com o ambiente Node.js, por ser a plataforma mais popular
+para desenvolvimento de aplicações \textit{backend} em Javascript.
