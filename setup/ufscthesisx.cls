@@ -2374,6 +2374,41 @@
   {€}{{\EUR}}1
 }
 
+\lstdefinelanguage{Javascript}{
+  morekeywords=[1]{break, continue, delete, else, for, function, if, in,
+    new, return, this, typeof, var, void, while, with},
+  % Literals, primitive types, and reference types.
+  morekeywords=[2]{false, null, true, boolean, number, undefined,
+    Array, Boolean, Date, Math, Number, String, Object},
+  % Built-ins.
+  morekeywords=[3]{eval, parseInt, parseFloat, escape, unescape},
+  sensitive,
+  morecomment=[s]{/*}{*/},
+  morecomment=[l]//,
+  morecomment=[s]{/**}{*/}, % JavaDoc style comments
+  morestring=[b]',
+  morestring=[b]"
+}[keywords, comments, strings]
+
+\lstdefinelanguage{elixir}{
+    morekeywords={case,catch,def,do,else,false,%
+        use,alias,receive,timeout,defmacro,defp,%
+        for,if,import,defmodule,defprotocol,%
+        nil,defmacrop,defoverridable,defimpl,%
+        super,fn,raise,true,try,end,with,%
+        unless},
+    otherkeywords={<-,->, |>, \%\{, \}, \{, \, (, )},
+    sensitive=true,
+    morecomment=[l]{\#},
+    morecomment=[n]{/*}{*/},
+    morecomment=[s][\color{purple}]{:}{\ },
+    morestring=[s][\color{orange}]"",
+    commentstyle=\color{commentgreen},
+    keywordstyle=\color{purple},
+    stringstyle=\color{red},
+	showstringspaces=false,
+}
+
 % Defining `lstset` parameters for multiple languages & How can I highlight YAML code in a pretty way with listings?
 %
 % Usage \begin{lstlisting}[style=yaml_style] ... \end{lstlisting}

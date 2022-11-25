@@ -1,0 +1,406 @@
+\phantomsection
+
+\chapter{Trabalhos relacionados}
+\phantomsection
+
+Neste capítulo, vamos explorar outras linguagens usadas para desenvolvimento \textit{backend},
+construindo uma aplicação simples em cada uma delas. O objetivo é comparar funcionalidades,
+padrões de projeto, sintaxe das linguagens, e outras características. Para selecionar
+as linguagens, vamos nos basear em índices de uso e satisfação de linguagens. Cada
+linguagem será apresentada em uma subseção, e os critérios de escolha das linguagens
+serão especificados na subseção que as apresenta.
+
+\section{Aplicação base}\label{sec:aplicacao-base}
+
+Para comparar as linguagens, vamos construir uma aplicação simples, que será usada
+como base para as comparações. A aplicação consiste em um sistema de cadastro de
+usuários. A aplicação deve receber requisições HTTP para cadastrar, atualizar, deletar
+e listar usuários. Os dados devem ser enviados através do corpo da requisição, em
+formato JSON, seguindo a convenção REST. Cada usuário deve ter um id numérico
+(começando em 0, e aumentando em 1 a cada usuário cadastrado) nome e idade. A
+\autoref{tab-base-endpoints} apresenta os \textit{endpoints} da aplicação.
+
+
+\begin{table}[htb]
+    \caption[\textit{Endpoints} da aplicação base]{\textit{Endpoints} da aplicação base}
+    \label{tab-base-endpoints}
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{p{2.85cm}p{2.85cm}p{8.55cm}}
+            \toprule
+            \textbf{Método HTTP} & \textbf{\textit{Endpoint}} & \textbf{Descrição}                                                                         \\
+            \midrule
+            GET                  & /users                     & Lista todos os usuários cadastrados                                                        \\
+            GET                  & /users/:id                 & Lista um usuário específico                                                                \\
+            POST                 & /users                     & Cria um novo usuário. O nome e a idade devem ser enviados no corpo da requisição           \\
+            PUT                  & /users/:id                 & Atualiza um usuário específico. O nome e a idade devem ser enviados no corpo da requisição \\
+            DELETE               & /users/:id                 & Deleta um usuário específico                                                               \\
+            \bottomrule
+        \end{tabular}
+    }
+\end{table}
+
+\section{Linguagens relacionadas}
+
+Nesta seção, vamos construir a aplicação base apresentada na \autoref{sec:aplicacao-base}
+em algumas linguagens de programação, a fim de comparar as linguagens.
+
+Além de escolher uma linguagem, também precisaremos escolher \textit{frameworks}
+para construir a aplicação. Para cada linguagem, vamos procurar por \textit{frameworks}
+utilizando a pesquisa do GitHub, pesquisando \textbf{web framework language:\textit{linguagem}},
+e escolhendo o resultado com maior número de estrelas.
+
+\subsection{Python}
+
+De acordo com \textcite{tiobeindex}, Python é a linguagem de programação mais procurada
+no mundo, além de ter ganho o prêmio linguagem do ano nos anos 2007, 2010, 2018,
+2020 e 2021 pelo mesmo índice.
+
+Criada nos anos 80, é usada em diversas áreas, como ciência de
+dados, desenvolvimento web, desenvolvimento de jogos, entre outras. Python é uma
+linguagem de programação interpretada, de alto nível, de tipagem dinâmica e
+multi-paradigma (\textcite{pythonmanual}).
+
+Os três maiores \textit{frameworks} em termo de estrelas no GitHub são Django,
+Flask e FastAPI, nesta ordem. Como Django é um framework \textit{fullstack} (ou seja,
+ele é um \textit{framework} que abrange tanto o desenvolvimento \textit{frontend}
+quanto o desenvolvimento \textit{backend}, e não é usado para APIs REST), vamos
+usar o Flask.
+
+\begin{lstlisting}[language=Python,label={code:flaskapp},caption={Aplicação base em Python com Flask}]
+from flask import Flask, jsonify, request, Response
+
+app = Flask(__name__)
+users = {}
+last_index = 0
+
+@app.route('/users', methods=["GET"])
+def index():
+    return jsonify(users)
+
+@app.route('/users/<int:user_id>', methods=["GET"])
+def show(user_id):
+    return jsonify(users[user_id])
+
+@app.route('/users', methods=['POST'])
+def create():
+    global last_index
+
+    body = request.get_json()
+    last_index = last_index + 1
+    users[last_index] = body
+
+    return jsonify({'id': last_index})
+
+@app.route('/users/<int:user_id>', methods=["PUT"])
+def update(user_id):
+    body = request.get_json()
+    users[user_id] = body
+
+    return Response(status=200)
+
+@app.route('/users/<int:user_id>', methods=["DELETE"])
+def delete(user_id):
+    users.pop(user_id)
+
+    return Response(status=200)
+
+\end{lstlisting}
+
+Flask se baseia no uso de \textit{decorators} para definir as diferentes rotas
+da aplicação. Isso faz com que seja rápido e fácil de escrever programas com Flask,
+mas também pode ser confuso para quem não está acostumado com o uso de \textit{decorators}
+ou do framework em si. O \autoref{code:flaskapp} apresenta a implementação da aplicação
+base em Flask.
+
+\subsection{C\#}
+
+C\# é a próxima linguagem comumente usada para aplicações \textit{backend} depois
+de Python e Java (\textcite{tiobeindex}). C\# foi escolhida ao invés de Java por
+serem duas linguagens bastante similares, e C\# ser mais procurada, mais amada,
+e menos temida por desenvolvedores do que Java (\textcite{stackoverflowsurvey}).
+
+C\# foi desenvolvida por Anders Hejlsberg, na Microsoft, em 2000, com o intuito
+de ser uma linguagem simples, moderna, orientada a objetos e com segurança de tipos
+para a plataforma .NET (\textcite{csharpmanual}).
+
+A plataforma .NET possui o \textit{framework} ASP.NET, feito para desenvolver
+aplicativos web e serviços. Essa é a opção mais popular para desenvolvimento web
+com C\#, e é a que vamos usar. O \autoref{code:aspnetapp} apresenta parte da implementação
+da aplicação base em C\# com ASP.NET, mostrando apenas a rota de atualizar um
+usuário.
+
+\begin{lstlisting}[language=C++,label={code:aspnetapp},caption={Aplicação base em C\# com ASP.NET}]
+[Route("users")]
+[ApiController]
+public class UserController : ControllerBase
+{
+    ...
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateUser(long id, UserInput input)
+    {
+        var user = await _context.FindAsync<User>(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        user.Name = input.Name;
+        user.Age = input.Age;
+        _context.Entry(user).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    ...
+}
+\end{lstlisting}
+
+Como C\# é uma linguagem fortemente orientada a objetos, o \textit{framework} ASP.NET
+faz forte uso classes, objetos e herança, além de também usar \textit{decorators}.
+O corpo das requisições é obtido automaticamente como um parâmetro do método que
+responde à requisição, o que também pode ser confuso.
+
+Por outro lado, o framework tem boas ferramentas de geração de código, que geram
+boa parte do código básico necessário para uma aplicação, o que pode agilizar o
+desenvolvimento inicial.
+
+Um simples projeto necessita de vários arquivos de configuração (gerados automaticamente),
+que também podem ser confusos para quem não está acostumado com o \textit{framework}.
+
+
+\subsection{Javascript}\label{subsec:js}
+
+Javascript é a próxima linguagem comumente usada para aplicações \textit{backend}
+depois de C\# na tabela \textcite{tiobeindex}, e é a linguagem alvo para Ipe.
+
+Originalmente desenvolvida por Brendan Eich na Netscape em 1995 para adicionar
+interações em páginas web, Javascript é uma linguagem de script interpretada, de
+tipagem dinâmica e fracamente tipada, e orientada a objetos, com alguns aspectos
+de programação funcional. Javascript vem se tornando cada vez mais popular em
+outros meios, como o \textit{backend}, dispositivos IOT, microsserviços, aplicações
+desktop, entre outros. Por conta de sua popularidade, muitas bibliotecas, frameworks
+e ferramentas existem para auxiliar no desenvolvimento de aplicações Javascript.
+Notavelmente, existem esforços para adicionar tipagem estática, principalmente
+através do Typescript, que já é mais amado, mais procurado e menos temido do que
+o Javascript \textcite{stackoverflowsurvey}.
+
+Para desenvolver a aplicação base, usaremos a plataforma Node.js, que possibilita
+executar programas Javascript fora do navegador, e o framework Express. O
+\autoref{code:nodeapp} apresenta a implementação da aplicação base em Javascript.
+
+
+\begin{lstlisting}[language=Javascript,label={code:nodeapp},caption={Aplicação base em Javascript com Express}]
+const express = require("express");
+
+const app = express();
+
+const users = new Map();
+let lastId = 0;
+
+app.use(express.json());
+
+app.get("/users", (req, res) => {
+  const allUsers = Array.from(users.values());
+
+  res.json(allUsers);
+});
+
+app.get("/users/:userId", (req, res) => {
+  const userId = parseInt(req.params.userId);
+  const user = users.get(userId);
+
+  res.json(user);
+});
+
+app.post("/users", (req, res) => {
+  const { name, age } = req.body;
+  lastId++;
+  users.set(lastId, { name, age, id: lastId });
+
+  res.json({ id: lastId });
+});
+
+app.put("/users/:userId", (req, res) => {
+  const userId = parseInt(req.params.userId);
+  const { name, age } = req.body;
+  users.set(userId, { name, age, id: userId });
+
+  res.json({ id: userId });
+});
+
+app.delete("/users/:userId", (req, res) => {
+  const userId = parseInt(req.params.userId);
+  users.delete(userId);
+
+  res.json({ id: userId });
+});
+
+app.listen(3000, (err) => {
+  if (err) {
+    console.log(err);
+  }
+
+  console.log("Server is running on port 3000");
+});
+\end{lstlisting}
+
+O \textit{framework} Express usa algumas ideias de programação funcional, como
+funções de alta ordem e funções anônimas, o que gera um código bastante legível
+e expansível. Além disso, tudo é bastante explícito, sem \textit{decorators} ou
+geração de código, o que também melhora a legibilidade, com baixo custo em velocidade
+de desenvolvimento.
+
+A abstração de rotas é feita através de funções, que recebem como parâmetros
+um objeto representando a requisição HTTP e outro representando a resposta. Uma
+abstração melhor seria receber apenas a requisição como parâmetro, e retornar uma
+resposta.
+
+\subsection{Elixir}
+
+Elixir é a segunda linguagem mais amada, mais procurada e menos odiada, perdendo
+apenas para Rust (\textcite{stackoverflowsurvey}). Rust não foi escolhido por que
+a abordagem dos \textit{frameworks} em Rust são parecidas com as abordagens já
+vistas nas linguagens anteriores. Outro ponto para escolher Elixir é o fato de
+Elixir ser uma linguagem funcional, ou seja, uma linguagem diferente das outras
+já vistas, e similar a Ipe.
+
+Elixir é uma linguagem de programação funcional, concorrente e de tipagem dinâmica,
+desenvolvida por José Valim em 2012. Elixir é compilada para a máquina virtual
+BEAM, que é concorrente e tolerante a falhas, e também é usada pela linguagem
+Erlang.
+
+Para desenvolver a aplicação base, usaremos o framework Phoenix.
+
+O \textit{framework} Phoenix se aproveita bastante da geração automática de código
+e da funcionalidade de \textit{macros} do Elixir, o que gera um código mais conciso,
+mas muito mais difícil de entender. A aplicação inteira foi gerada automaticamente,
+o que facilita e agiliza o início de um projeto. Porém, isso dificulta na manutenção
+e compreensão do código.
+
+Como a ferramenta gera bastante código, apenas algumas partes são apresentadas a
+seguir.
+
+O \autoref{code:elixirrouter} apresenta a definição das rotas da aplicação, que
+permite definir funções a serem executadas antes de cada rota, além do agrupamento
+de rotas.
+
+
+\begin{lstlisting}[language=Elixir,label={code:elixirrouter},caption={Definição das rotas da aplicação em Elixir com Phoenix}]
+pipeline :api do
+  plug(:accepts, ["json"])
+end
+
+scope "/users", UserCrudWeb do
+  pipe_through(:api)
+  get("/", UserController, :index)
+  get("/:id", UserController, :show)
+  post("/", UserController, :create)
+  put("/:id", UserController, :update)
+  delete("/:id", UserController, :delete)
+end
+\end{lstlisting}
+
+O \autoref{code:elixircreate} apresenta a implementação do método de criação de
+usuários. O uso do operador \texttt{|>} permite a composição de funções, o que
+gera um código mais conciso, e descreve uma sequência de transformações de dados,
+um dos pilares da programação funcional. Também podemos ver que a função recebe
+um mapa como parâmetro, que representa o corpo da requisição HTTP.
+
+\begin{lstlisting}[language=Elixir,label={code:elixircreate},caption={Função de criação de usuário em Elixir com Phoenix}]
+def create(conn, %{"user" => user_params}) do
+  with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
+    conn
+    |> put_status(:created)
+    |> put_resp_header("location", Routes.user_path(conn, :show, user))
+    |> render("show.json", user: user)
+  end
+end
+\end{lstlisting}
+
+\subsection{Haskell}
+
+Haskell é a linguagem número 50 na tabela \textcite{tiobeindex}, e foi escolhida
+por ser considerada a principal linguagem funcional hoje em dia.
+
+Haskell é uma linguagem de programação de propósito geral, puramente funcional,
+que inclui funções de alta ordem, tipos polimórficos, inferência de tipos e
+tipagem estática (\textcite{conceptionoffunctionalpl}).
+
+O \textit{framework} escolhido foi o IHP, que, similarmente ao Phoenix do Elixir,
+usa ferramentas de geração de código para gerar a maior parte do código necessário
+de uma aplicação. Ao invés de usar \textit{macros}, o IHP usa tipos polimórficos
+e outros recursos da linguagem para diminuir repetição de código. Haskell é
+famosa por ser difícil de aprender e usar, e o uso extensivo de recursos avançados
+da linguagem tornam o código gerado pelo IHP difícil de entender.
+
+O \autoref{code:haskellcreate} apresenta a implementação do método de criação de
+usuários. Em Haskell, também é comum vermos a estrutura de composição de funções
+(com o operador \texttt(|>)), assim como vimos em Elixir.
+
+\begin{lstlisting}[language=Haskell,label={code:haskellcreate},caption={Função de criação de usuário em Haskell com IHP}]
+action CreateUserAction = do
+    let user = newRecord @User
+    user
+        |> buildUser
+        |> ifValid \case
+            Left user -> render NewView { .. } 
+            Right user -> do
+                user <- user |> createRecord
+                setSuccessMessage "User created"
+                redirectTo UsersAction
+\end{lstlisting}
+
+\section{Conclusões dos experimentos}
+
+Agora que experimentamos diferentes linguagens, com diferentes paradigmas, podemos
+recolher aprendizados e conclusões sobre o que foi visto. A seguir são apresentados
+alguns pontos vistos como importantes na linguagem Ipe. Além de analisar cada ponto
+nas linguagens vistas anteriormente, vamos discutir as lições aprendidas e usadas
+para o desenvolvimento de Ipe.
+
+\subsection{Simplicidade e funcionalidades}
+
+Linguagens mais maduras ou mais antigas tendem a ter várias funcionalidades, e
+cada funcionalidade pode ter mais de uma forma de ser usada. Por exemplo, em
+Javascript uma variável pode ser definida com \texttt{var}, \texttt{let} ou
+\texttt{const}, e funções podem ser criadas com a palavra reservada \texttt{function}
+ou em formato de \textit{arrow function}. Isso pode ser confuso para quem está
+aprendendo a linguagem, além de gerar divisões entre os usuários da linguagem.
+
+Outro exemplo de alta complexidade é Haskell, que possui inúmeras extensões de
+linguagem, que servem para melhorar recursos da linguagem, ou adicionar novos
+recursos. Pode ser difícil mudar de uma base de código que usa certa extensões
+de linguagem para outra base de código que não as usa. Mesmo sendo a mesma linguagem,
+a forma de usá-la pode ser extremamente diferente em cada base de código.
+
+Como Ipe é uma linguagem específica para aplicações \textit{backend}, podemos
+montar uma linguagem mais simples, com menos funcionalidades. Assim, a curva de
+aprendizado deve ser menor, e a linguagem deve ser mais fácil de usar. Além disso,
+código Ipe deve ser padronizado -- cada tarefa deve ter uma única forma de ser feita --,
+de forma que não leve muito tempo para entender um projeto novo, vindo de outro projeto.
+Neste sentido, podemos utilizar de alguns pontos da filosofia do Python:
+
+\begin{itemize}
+    \item \textit{Explicit is better than implicit.}
+    \item \textit{There should be one-- and preferably only one --obvious way to do it.}
+\end{itemize}
+
+\cite{zenofpython}
+
+O uso de \textit{macros} e \textit{decorators} dificulta a compreensão do código,
+pois gera mais código implícito. Ipe tem o objetivo de ser uma linguagem extremamente
+explícita -- mesmo que isso custe mais linhas de código para usuários da linguagem.
+
+\subsection{Operadores}
+
+A composição de funções através de \textit{pipelines} com o operador
+\texttt{|>} produz código conciso que expressa muito bem a ideia de transformações
+sucessivas de dados, um dos focos da programação funcional. Podemos nos tentar
+a criar operadores arbitrários, que podem ser usados para resolver problemas
+específicos (por exemplo, um operador \texttt{.+} que faça soma de matrizes).
+Porém, isso pode afetar bastante a legibilidade do código, gerando símbolos
+imprevisíveis, específicos a uma pequena parte de uma única aplicação. Haskell
+permite a criação de operadores arbitrários, o que produz código extremamente
+difícil de se entender. Em Ipe, iremos evitar a criação de operadores arbitrários,
+dando preferência a funções nomeadas.
