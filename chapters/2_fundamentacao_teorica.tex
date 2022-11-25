@@ -3,6 +3,31 @@
 \chapter{Fundamentação Teórica}
 \phantomsection
 
+Neste capítulo, discutiremos a fundamentação teórica necessária para compreender
+o trabalho. Começaremos discutindo APIs REST na \autoref{sec:apis}, que são o
+objetivo inicial para programas escritos em Ipe. Depois, na \autoref{sec:analise_codigo_fonte},
+discutiremos o processo de compilação
+
+\section{APIs e APIs REST}\label{sec:apis}
+
+Uma API (\textit{Application Programming Interface}) é um termo usado para representar
+a interface de comunicação entre programas de computador. Por exemplo, a coleção
+de métodos públicos de uma classe em Java pode ser chamada de API, pois é o
+meio de comunicação entre o resto do programa e a classe.
+
+Mais comumente, uma API é a face de um serviço web, ativamente escutando por
+requisições HTTP e as respondendo \cite{restapirulebook}, de forma que clientes
+(páginas web, aplicativos celulares) possam se comunicar com o serviço.
+
+REST (\textit{Representational State Transfer}) é um estilo de arquitetura para
+modelar APIs, de forma que diferentes APIs tenham um formato padrão. Geralmente,
+APIs usam o formato JSON (\textit{JavaScript Object Notation}) para representar
+dados.
+
+O foco inicial de Ipe é desenvolver APIs REST.
+
+\section{Análise de código fonte}\label{sec:analise_codigo_fonte}
+
 Ipe será uma linguagem de programação de alto nível. Isso significa que, em algum
 momento, código Ipe (linguagem fonte), deve ser transformado para algo que
 computadores entendam (linguagem alvo). Esse processo se chama compilação, e é
@@ -18,8 +43,6 @@ aplicadas transformações no código. Por exemplo, o compilador pode realizar
 otimizações, ou remover código não utilizado. Por fim, o código fonte é
 transformado para a linguagem alvo. Vamos discutir cada uma dessas etapas em
 maiores detalhes nas seções a seguir.
-
-\section{Análise de código fonte}
 
 A análise de código fonte é a primeira etapa do processo de compilação, e se
 baseia na \textit{gramática} da linguagem. A gramática de uma linguagem é uma lista
