@@ -1,11 +1,32 @@
-
-% The \phantomsection command is needed to create a link to a place in the document that is not a
-% figure, equation, table, section, subsection, chapter, etc.
-% https://tex.stackexchange.com/questions/44088/when-do-i-need-to-invoke-phantomsection
 \phantomsection
 
-% ---
 \chapter{Conclusões finais}
 \phantomsection
 
+Este trabalho apresenta Ipe, uma linguagem de programação puramente funcional.
+Ipe visa usar características de linguagens e \textit{frameworks} de desenvolvimento
+de aplicações \textit{backend} modernos. Vimos algumas dessas características na
+\autoref{subsec:js} e \autoref{subsec:python}, quando vimos aplicações \textit{backend}
+em Javascript e Python, respectivamente. Também vimos o exemplo de uma aplicação
+em Haskell, na \autoref{subsec:haskell}, e vimos que, embora o código seja bastante
+resiliente, ele é extremamente complexo e difícil de compreender. Ipe tem o objetivo
+de simplificar o uso da programação funcional, sem comprometer a expressividade
+garantida por linguagens funcionais e diminuindo a barreira de entrada no mundo
+funcional, seguindo o exemplo de Elm.
 
+No \autoref{chapter:specification}, definimos as características da linguagem Ipe:
+vimos definições de módulos, tipos e funções. Também discutimos sobre a arquitetura
+e o \textit{runtime} Ipe no \autoref{chapter:programas-em-ipe}, que possibilitam
+programas compostos apenas de funções puras, sem efeitos colaterais, mas que
+sejam úteis no mundo real.
+
+Nos próximos capítulos, iremos discutir sobre a implementação de Ipe, usando a
+linguagem de programação Haskell, uma das principais linguagens funcionais. Também
+iremos construir o \textit{runtime} Ipe, junto com alguns módulos padrão que serão
+usados em todos os programas Ipe.
+
+Assim que tivermos a linguagem, o \textit{runtime} e os módulos padrão em mãos,
+podemos construir a aplicação base descrita na \autoref{sec:aplicacao-base} em Ipe,
+para que possamos comparar essa implementação com as que fizemos no
+\autoref{chapter:trabalhos-relacionados} e verificar se atingimos os objetivos
+definidos na \autoref{sec:objectives}.

@@ -1,6 +1,6 @@
 \phantomsection
 
-\chapter{Trabalhos relacionados}
+\chapter{Trabalhos relacionados}\label{chapter:trabalhos-relacionados}
 \phantomsection
 
 Neste capítulo, vamos explorar outras linguagens usadas para desenvolvimento \textit{backend},
@@ -22,21 +22,21 @@ formato JSON, seguindo a convenção REST. Cada usuário deve ter um id numéric
 
 
 \begin{table}[htb]
-    \caption[\textit{Endpoints} da aplicação base]{\textit{Endpoints} da aplicação base}
-    \label{tab-base-endpoints}
-    \resizebox{\textwidth}{!}{%
-        \begin{tabular}{p{2.85cm}p{2.85cm}p{8.55cm}}
-            \toprule
-            \textbf{Método HTTP} & \textbf{\textit{Endpoint}} & \textbf{Descrição}                                                                         \\
-            \midrule
-            GET                  & /users                     & Lista todos os usuários cadastrados                                                        \\
-            GET                  & /users/:id                 & Lista um usuário específico                                                                \\
-            POST                 & /users                     & Cria um novo usuário. O nome e a idade devem ser enviados no corpo da requisição           \\
-            PUT                  & /users/:id                 & Atualiza um usuário específico. O nome e a idade devem ser enviados no corpo da requisição \\
-            DELETE               & /users/:id                 & Deleta um usuário específico                                                               \\
-            \bottomrule
-        \end{tabular}
-    }
+  \caption[\textit{Endpoints} da aplicação base]{\textit{Endpoints} da aplicação base}
+  \label{tab-base-endpoints}
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{p{2.85cm}p{2.85cm}p{8.55cm}}
+      \toprule
+      \textbf{Método HTTP} & \textbf{\textit{Endpoint}} & \textbf{Descrição}                                                                         \\
+      \midrule
+      GET                  & /users                     & Lista todos os usuários cadastrados                                                        \\
+      GET                  & /users/:id                 & Lista um usuário específico                                                                \\
+      POST                 & /users                     & Cria um novo usuário. O nome e a idade devem ser enviados no corpo da requisição           \\
+      PUT                  & /users/:id                 & Atualiza um usuário específico. O nome e a idade devem ser enviados no corpo da requisição \\
+      DELETE               & /users/:id                 & Deleta um usuário específico                                                               \\
+      \bottomrule
+    \end{tabular}
+  }
 \end{table}
 
 \section{Linguagens relacionadas}
@@ -49,7 +49,7 @@ para construir a aplicação. Para cada linguagem, vamos procurar por \textit{fr
 utilizando a pesquisa do GitHub, pesquisando \textbf{web framework language:\textit{linguagem}},
 e escolhendo o resultado com maior número de estrelas.
 
-\subsection{Python}
+\subsection{Python}\label{subsec:python}
 
 De acordo com \textcite{tiobeindex}, Python é a linguagem de programação mais procurada
 no mundo, além de ter ganho o prêmio linguagem do ano nos anos 2007, 2010, 2018,
@@ -318,7 +318,7 @@ def create(conn, %{"user" => user_params}) do
 end
 \end{lstlisting}
 
-\subsection{Haskell}
+\subsection{Haskell}\label{subsec:haskell}
 
 Haskell é a linguagem número 50 na tabela \textcite{tiobeindex}, e foi escolhida
 por ser considerada a principal linguagem funcional hoje em dia.
@@ -382,8 +382,8 @@ de forma que não leve muito tempo para entender um projeto novo, vindo de outro
 Neste sentido, podemos utilizar de alguns pontos da filosofia do Python:
 
 \begin{itemize}
-    \item \textit{Explicit is better than implicit.}
-    \item \textit{There should be one-- and preferably only one --obvious way to do it.}
+  \item \textit{Explicit is better than implicit.}
+  \item \textit{There should be one-- and preferably only one --obvious way to do it.}
 \end{itemize}
 
 \cite{zenofpython}
