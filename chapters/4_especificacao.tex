@@ -304,14 +304,14 @@ que usa um tipo específico para o contexto da aplicação.
 
 \begin{lstlisting}[label={lst:pattern-match-correct},caption={Maneira idiomática da função greet}]
 type union Being =
-    | Human
+    | Human { name : String }
     | Robot
 
 greet : Being -> String
 greet =
     \being ->
         match being with
-            | Human -> "Hello, human!"
+            | Human human -> String.concat [ "Hello, ", human.name , "!" ]
             | Robot -> "Beep boop"
 \end{lstlisting}
 
@@ -328,6 +328,14 @@ fibonacci =
             | 1 -> 1
             | _ -> fibonacci (n - 1) + fibonacci (n - 2)
 \end{lstlisting}
+
+\textit{Pattern matching} em Ipe é exaustivo, ou seja, todas as variações de um
+tipo devem ser tratadas. No \autoref{lst:pattern-match-number}, precisaríamos
+tratar todos os números possíveis. A primeira linha que resultar em um \textit{match}
+é a linha executada. Ipe também possibilita o uso de \texttt{\_} para fazer \textit{match}
+em qualquer valor de um tipo, o que é útil para tipos com infinitas etiquetas, como
+\texttt{Number} e \texttt{String}, mas também pode ser usado em números com etiquetas
+finitas.
 
 \section{Operadores}
 

@@ -102,16 +102,133 @@ passando o resultado de uma para a outra. Este código é apenas um exemplo, poi
 na realidade, teríamos que lidar com erros (usando o tipo \texttt{Result}), e
 não apenas com o caso de sucesso.
 
+Para de realizar os efeitos colaterais de uma \texttt{Task}, usamos a função
+\texttt{Task.perform : (Result error ok -> event) -> Task error ok -> Effect event},
+que converte uma \texttt{Task} em um \texttt{Effect}.
 
-\section{Runtime}\label{sec:runtime}
 
-O \textit{Runtime} (ambiente de execução) é o responsável por realizar efeitos
-colaterais, que podem ser executar \texttt{Tasks}, ou sinalizar o programa quando
-uma \texttt{Subscription} for ativada. Por exemplo, o \textit{Runtime} é responsável
-por ler o conteúdo de um arquivo e receber e enviar requisições HTTP. O \textit{Runtime}
-é implementado em Javascript, e ele converte \texttt{Tasks} em código Javascript,
-e retorna o resultado para o programa Ipe. Similarmente, quando um programa Ipe
-adiciona uma nova \texttt{Subscription}, o \textit{Runtime} é responsável por
-gerar Javascript que avise o programa Ipe quando necessário.
+\section{Runtime e arquitetura}\label{sec:runtime}
 
-% TODO - Adicionar uma figura
+Programas Ipe são desenvolvidos seguindo uma certa arquitetura, também inspirada
+pela arquitetura Elm. Programas Ipe são representados por três partes principais:
+
+\begin{itemize}
+    \item \textit{Model}: representa o estado do programa. É um tipo definido
+          pelo programador -- tipicamente um \texttt{Record}. Também é necessário definir
+          uma função \texttt{init} que define o estado inicial do programa. Também
+          é possível realizar \textit{Effects} na função de \texttt{init}.
+    \item \textit{update}: função que recebe um evento e o estado atual do programa
+          (\texttt{Model}). Eventos também são representados por um tipo definido pelo
+          programador, e tipicamente são uniões de tipos. A função \texttt{update} possui
+          a anotação \texttt{update : event -> model -> { model : model, effect : Effect event }},
+          ou seja, recebe um evento e o estado atual do programa, e retorna o novo estado,
+          com possíveis efeitos colaterais.
+    \item \textit{subscribe}: função que possibilita o programa a se inscrever
+          em eventos do sistema, como o recebimento de requisições HTTP. Para tal,
+          a função recebe como argumento o \texttt{Model} atual, e retorna uma
+          \texttt{Subscription}.
+\end{itemize}
+
+O \textit{Runtime} (ambiente de execução, em português) é o responsável por manter
+o estado do programa, e executar as funções \texttt{update} e \texttt{subscribe},
+além de executar os efeitos colaterais retornados pela função de \texttt{update}.
+O \textit{Runtime} é implementado em Javascript, e ele converte \texttt{Tasks} em
+código Javascript, e retorna o resultado para o programa Ipe.  Similarmente, quando
+um programa Ipe adiciona uma nova \texttt{Subscription}, o \textit{Runtime} é
+responsável por gerar Javascript que avise o programa Ipe quando necessário. A
+\autoref{fig:runtime} mostra a arquitetura do \textit{Runtime}.
+
+
+\begin{figure}[htb]
+    \caption{Arquitetura do \textit{Runtime} Ipe}
+    \label{fig:runtime}
+    \begin{center}
+        \includegraphics[scale=0.65]{pictures/runtime.png}
+    \end{center}
+\end{figure}
+
+Para dizer ao \textit{Runtime} quais funções utilizar como funções de inicialização,
+\textit{update} e \textit{subscribe}, programas Ipe devem definir um módulo \texttt{Main},
+que exporta ao menos uma função \texttt{main}. O \autoref{lst:full-program} mostra
+um exemplo de programa completo em Ipe, que imprime na tela uma mensagem a cada
+minuto, parando depois de imprimir 10 vezes.
+
+\begin{lstlisting}[label={lst:full-program},caption={Exemplo de programa completo em Ipe, que imprime na tela uma mensagem a cada minuto}]
+module Main exports [main]
+
+type alias Model = { messagesPrinted : Number }
+
+type union Event = 
+    | PrintMessage
+    | PrintedMessage (Result Console.Error String)
+
+main : { init : { model : Model, effect : Effect Event }
+       , update : Event -> Model -> { model : Model, effect : Effect Event }
+       , subscribe : Model -> Subscription Event
+       }
+main =
+    { init: { model: { messagesPrinted = 0 }, effect: Effect.none }
+    , update: update
+    , subscribe: subscribe
+    }
+
+update : Event -> Model -> { model : Model, effect : Effect Event }
+update =
+    \event model ->
+        match event with
+            | PrintMessage ->
+                { model: model
+                , effect: 
+                    String.fromInt model.messagesPrinted
+                    |> Console.log
+                    |> Task.perform PrintedMessage
+                }
+            | PrintedMessage ->
+                { model: { messagesPrinted: model.messagesPrinted + 1 }
+                , effect: Effect.none
+                }
+
+subscribe : Model -> Subscription Event
+subscribe =
+    \model ->
+        match Number.compare model.messagesPrinted 10 with
+            | Number.Smaller -> Time.every 60000 PrintMessage
+            | Number.Equal -> Subscription.none
+            | Number.Greater -> Subscription.none
+\end{lstlisting}
+
+Os passos que o \textit{Runtime} toma para executar o \autoref{lst:full-program}
+são:
+
+\begin{enumerate}
+    \item Ler a função \texttt{main} para saber quais são as funções \texttt{init},
+          \texttt{update} e \texttt{subscribe}.
+    \item Executa a função \texttt{init}, e define o estado inicial do programa
+          como o \texttt{Record} \texttt{{ messagesPrinted = 0 }}. Caso a função \texttt{init}
+          retornasse um efeito colateral, o \textit{Runtime} executaria o efeito colateral.
+    \item Usa o modelo inicial para executar a função \texttt{subscribe}, e
+          começa a esperar por eventos.
+    \item Quando um evento chega, o \textit{Runtime} executa a função \texttt{update}
+          com o evento e o modelo atual. Efeitos (retornados pelas funções \texttt{init}
+          e \texttt{update}) também produzem eventos, que também são tratados na função
+          \texttt{update}. Após cada chamada a \texttt{update}, a função \texttt{subscribe}
+          é chamada novamente.
+    \item Após imprimir 10 vezes na tela, a função \texttt{subscribe} retorna
+          \texttt{Subscription.none}, e o programa para de esperar por eventos.
+          Quando não existem mais efeitos sendo processados, e a função \texttt{subscribe}
+          retorna \texttt{Subscription.none}, o programa termina.
+\end{enumerate}
+
+A \autoref{fig:runtime-internals} mostra mais detalhes de como as funções \texttt{init},
+\texttt{update} e \texttt{subscribe} se integram com o \textit{Runtime}.
+
+\begin{figure}[htb]
+    \caption{Arquitetura detalhada do \textit{Runtime} Ipe}
+    \label{fig:runtime-internals}
+    \begin{center}
+        \includegraphics[scale=0.5]{pictures/runtime-internals.png}
+    \end{center}
+\end{figure}
+
+Podemos ver que, após a definição do modelo inicial em \texttt{init}, as funções
+\texttt{update} e \texttt{subscribe} leem o modelo, e respondem a eventos.
