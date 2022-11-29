@@ -2,3 +2,30 @@
 
 \chapter{Cronograma}
 \phantomsection
+
+Até agora, já analisamos algumas outras linguagens, e colhemos inspirações para
+o desenvolvimento de Ipe. Usamos estas informações no \autoref{chapter:specification}
+para definir a linguagem Ipe. Agora, vamos nos concentrar na implementação da
+linguagem de fato. Para tal, usaremos Haskell. A \autoref{tab:cronograma} descreve
+os próximos passos para o desenvolvimento de Ipe.
+
+\begin{table}[htb]
+    \caption{Cronograma de desenvolvimento para a linguagem Ipe}
+    \label{tab:cronograma}
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{p{9.5cm}p{4.65cm}}
+            \toprule
+            \textbf{Tarefa}                                             & \textbf{Tempo estimado para conclusão} \\
+            \midrule
+            \textit{Parsing} de código fonte                            & 2 semanas                              \\
+            Checagem de tipos                                           & 1 semana                               \\
+            Geração de código Javascript                                & 1 semana                               \\
+            Construção do \textit{Runtime} e módulos padrão             & 3 semanas                              \\
+            Construção da aplicação base em Ipe e análise de resultados & 1 semana                               \\
+            \bottomrule
+        \end{tabular}
+    }
+\end{table}
+
+Ao todo, estima-se que o desenvolvimento da linguagem Ipe levará cerca de mais 8
+semanas, ou seja, 56 dias.
