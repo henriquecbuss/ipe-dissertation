@@ -1,0 +1,386 @@
+\phantomsection
+
+\chapter{Especificação da linguagem}
+\phantomsection
+
+Este capítulo tem o objetivo de definir as características da linguagem Ipe, como
+sintaxe e semântica. As características serão demonstradas principalmente através
+de código Ipe, para exemplificar o uso real.
+
+\section{Comentários}
+
+Ipe define três tipos de comentários, que são ignorados pelo compilador. O primeiro
+tipo é o comentário de linha, que começa com \texttt{//}, e vai até o final da linha.
+O segundo tipo é o comentário de bloco, que começa com \texttt{/*} e termina com
+\texttt{*/}, podendo conter múltiplas linhas, ou terminar na mesma linha. O último
+tipo de comentário se chama comentário de documentação, e é similar ao comentário
+de bloco, mas começa com \texttt{/*|}, e deve ser colocado na linha acima de uma
+definição, ou no começo do arquivo, logo após a declaração de módulo. Comentários
+de documentação têm a finalidade de documentar código, e serão usados principalmente por
+futuras ferramentas de análise de código. Por exemplo, ao manter o cursor do
+mouse sobre uma função em um editor de texto, o editor pode mostrar o comentário
+de documentação. No \autoref{lst:comentarios} são demonstrados alguns exemplos
+de comentários.
+
+\begin{lstlisting}[label={lst:comentarios},caption={Exemplos de comentários}]
+// Comentário de linha
+
+/* Comentário de bloco
+    Que pode ter várias linhas
+*/
+
+/*| Comentário de documentação
+    Aqui, podemos descrever uma função ou um módulo 
+*/
+\end{lstlisting}
+
+\section{Módulos}
+
+Programas escritos em Ipe são organizados em módulos. Cada módulo representa um
+arquivo, que começa com letra maiúscula e termina com a extensão \texttt{.ipe}
+(por exemplo, \texttt{Main.ipe}). Dentro de cada módulo, podem existir várias
+definições (mas ao menos uma), e cada módulo pode exportar várias funções (cada módulo
+deve exportar ao menos uma definição). Falaremos mais sobre definições na
+\autoref{sec:definicoes}. Para declarar um módulo, a primeira linha do arquivo deve
+ser no formato \texttt{module NomeDoModulo exports {lista de definições exportadas}}.
+Módulos dentro de pastas devem conter os nomes das pastas, separados por pontos.
+Por exemplo, o arquivo \texttt{Pasta1/Pasta2/Modulo.ipe} deve conter a linha
+\texttt{module Pasta1.Pasta2.Modulo exports {lista de definições exportadas}}.
+A seguir, demonstramos alguns tipos de definição de módulo.
+
+\begin{lstlisting}[label={lst:modulos},caption={Exemplo de módulos}]
+module Main exports [ main ]
+\end{lstlisting}
+
+Aqui, o módulo \texttt{Main} reside no arquivo \texttt{Main.ipe}, e exporta a
+definição chamada \texttt{main}.
+
+\begin{lstlisting}[label={lst:modulos2},caption={Exemplo de módulo em subpasta que exporta várias definições}]
+module Pasta1.Pasta2.Modulo exports
+    [ funcaoA
+    , tipoA
+    , funcaoB
+    , funcaoC
+    ]
+\end{lstlisting}
+
+No \autoref{lst:modulos2}, o módulo \texttt{Pasta1.Pasta2.Modulo} reside no arquivo
+\texttt{Modulo.ipe}, que está dentro da pasta \texttt{Pasta2}, que está dentro da
+pasta \texttt{Pasta1}. O módulo exporta as definições \texttt{funcaoA}, \texttt{funcaoB},
+\texttt{funcaoC} e \texttt{tipoA}. A lista de exportações pode percorrer múltiplas
+linhas.
+
+\begin{lstlisting}[label={lst:modulos3},caption={Exemplo de módulo com comentário de documentação}]
+module ModuloComComentario exports [ funcaoA ]
+
+/*| Comentário de documentação
+    Aqui podemos descrever o módulo e suas definições
+*/
+\end{lstlisting}
+
+No \autoref{lst:modulos3}, o módulo \texttt{ModuloComComentario} possui um comentário
+de documentação, que pode ser usado por ferramentas para melhorar a exploração
+do código.
+
+A vantagem de organizar o código em módulos é que módulos podem importar outros
+módulos, através da palavra-chave \texttt{import}. Isso é demonstrado no
+\autoref{lst:modulos-import}
+
+\begin{lstlisting}[label={lst:modulos-import},caption={Exemplo de importação de módulos}]
+module Main exports [ main ]
+
+/*| Os comentários de documentação vêm antes das importações
+*/
+
+import ModuloA
+import Pasta1.Pasta2.ModuloB as ModuloB
+\end{lstlisting}
+
+No \autoref{lst:modulos-import}, também podemos ver que é possível importar um
+módulo com um apelido, usando a palavra-chave \texttt{as}. Isso é útil quando
+um módulo possui um nome muito longo, ou quando outro nome faz mais sentido no
+contexto do módulo atual. Quando um módulo é importado com apelido, seu nome
+original não pode mais ser usado para se referir às definições daquele módulo.
+
+\section{Definições}\label{sec:definicoes}
+
+Nesta seção, discutiremos os dois tipos de definições em Ipe: tipos e funções.
+Definições são itens definidos a nível de módulo, ou seja, podem ser exportadas
+para serem usadas em outros módulos.
+
+\subsection{Tipos}\label{sec:tipos}
+
+Ipe possui um sistema de tipos muito parecido com o de Elm, e tem o objetivo de
+ser o mais simples possível, sem abandonar expressividade. Por isso, existem
+apenas dois tipos primitivos: \texttt{Number} e \texttt{String}, que representam
+números (inteiros e reais) e cadeias de caracteres, respectivamente. Números podem
+ter um ponto, para separar as casas decimais. \texttt{String}s são definidas entre
+aspas simples.
+
+Além disso, o tipo \texttt{Record} representa uma coleção de pares chave-valor
+pré-definidos. \texttt{Records} são construídos entre chaves, e cada par chave-valor
+é separado por vírgula. As chaves e seus valores são separados por dois pontos.
+Para acessar um elemento de um \texttt{Record}, basta usar a sintaxe \texttt{record.chave}
+
+
+Em Ipe, todos os valores e todas as definições são tipados (possuem um tipo). Para
+demonstrar os tipos dos valores, usamos o caractere \texttt{:}, seguido pelo tipo.
+O \autoref{lst:anotacoes} demonstra a anotação de tipos.
+
+\begin{lstlisting}[label={lst:anotacoes},caption={Exemplo de anotação de tipos}]
+5 : Number
+3.14 : Number
+'abc' : String
+{ a: 1, b: 'abc' } : { a : Number, b : String }
+\end{lstlisting}
+
+A verdadeira força do sistema de tipos de Ipe está na definição de novos tipos.
+Ipe permite três modalidades de novos tipos:
+
+\begin{itemize}
+    \item Apelidos: são usados para dar um novo nome a algum outro tipo qualquer.
+          São úteis para abreviar tipos compridos, como \texttt{Record}s com vários
+          campos. Para definir um novo apelido, usamos \texttt{type alias}.
+    \item Uniões: são usados para definir novos tipos, e são definidos com \texttt{type union}.
+          Discutiremos mais sobre uniões no \autoref{lst:type-unions}.
+    \item Opaco: são iguais às uniões, mas suas variantes não são exportadas para
+          outros módulos, ou seja, tipos opacos só podem ser construídos e manipulados
+          no módulo onde foram definidos. Tipos opacos são úteis para definir uma interface
+          específica de como utilizar tipos, pois seus módulos podem exportar funções
+          que manipulam os tipos de forma específica, e é impossível que eles sejam manipulados
+          de qualquer outra maneira. São definidos com \texttt{type opaque}.
+\end{itemize}
+
+
+\begin{lstlisting}[label={lst:type-alias},caption={Exemplo de apelido de tipo}]
+type alias Pessoa = { nome : String, idade : Number }
+\end{lstlisting}
+
+Um apelido de tipo serve simplesmente para abreviar um tipo. Outras definições
+poderiam se referir ao tipo \texttt{{ nome: String, idade : Number }} simplesmente
+como \texttt{Pessoa}.
+
+\begin{lstlisting}[label={lst:type-unions},caption={Exemplo de união de tipos}]
+type union Permissao =
+    | ConvidarNovosUsuarios
+    | RemoverUsuarios
+
+type union Usuario =
+    | Admin { nome : String, permissoes : List Permissao }
+    | UsuarioCadastrado { nome : String, email : String }
+    | UsuarioAnonimo
+\end{lstlisting}
+
+Podemos ver que as uniões de tipos são definidas por uma coleção de uma ou mais
+etiquetas (\textit{tags}, em inglês), e cada etiqueta pode ter um \texttt{Record}
+como argumento, ou não. Veremos mais como utilizar uniões de tipos na
+\autoref{sec:pattern-matching}.
+
+\begin{lstlisting}[label={lst:type-opaque},caption={Exemplo de tipos opacos}]
+type opaque Permissao =
+    | ConvidarNovosUsuarios
+    | RemoverUsuarios
+
+type opaque Usuario =
+    | Admin { nome : String, permissoes : List Permissao }
+    | UsuarioCadastrado { nome : String, email : String }
+    | UsuarioAnonimo
+\end{lstlisting}
+
+Tipos opacos são definidos e funcionam exatamente como uniões de tipos, mas suas
+etiquetas não são exportadas para outros módulos.
+
+O nome dos tipos é sempre escrito com a primeira letra maiúscula. Isso é uma convenção
+para distinguir tipos de outras definições.
+
+\subsubsection{Parâmetros de tipos}
+
+Ipe permite definir tipos que recebem outros tipos como parâmetros. É assim que
+estruturas como \texttt{List}s e \texttt{Dict}s funcionam -- elas recebem parâmetros
+de tipo para poderem ser genéricas. Todos os tipos mencionados acima (apelidos,
+uniões e tipos opacos) podem receber parâmetros de tipo. Os nomes dos parâmetros
+de tipos podem ser qualquer identificador que comece com uma letra minúscula. O
+\autoref{lst:parametros-tipos} mostra como definir um tipo com parâmetro.
+
+\begin{lstlisting}[label={lst:parametros-tipos},caption={Exemplo de como definir um tipo com parâmetro}]
+type opaque Pilha elemento =
+    | Pilha { itens : List elemento }
+
+type alias PilhaDeNumeros = Pilha Number
+\end{lstlisting}
+
+O tipo \texttt{Pilha} recebe um parâmetro de tipo chamado \texttt{elemento}. Dentro
+da definição de \texttt{Pilha}, podemos utilizar \texttt{elemento} para nos referirmos
+ao tipo que foi passado como parâmetro. Com esse mecanismo, podemos definir tipos
+genéricos. O tipo \texttt{PilhaDeNumeros} representa uma pilha especificamente de
+números.
+
+\subsection{Funções}
+
+Enquanto tipos são usados para definir modelar modelos e domínios, funções são
+usadas para manipular esses modelos e domínios. Juntos, funções e tipos são a
+base da programação funcional. Diferentemente de outras linguagens, Ipe possui
+uma única forma de definir funções, como mostra o \autoref{lst:funcoes}.
+
+\begin{lstlisting}[label={lst:funcoes},caption={Exemplo de como definir uma função}]
+\argumento1 argumento2 ->
+    soma = argumento1 + argumento2
+    dobro = soma * 2
+    dobro * 4
+\end{lstlisting}
+
+Na linha 1, definimos os argumentos da função (\texttt{argumento1} e \texttt{argumento2}).
+Argumentos podem receber qualquer identificador que comece com uma letra minúscula.
+Nas linhas 2 e 3, definimos duas variáveis locais (\texttt{soma} e \texttt{dobro}).
+Podemos incluir quantas declarações quisermos no corpo da função. A expressão da
+última linha define o retorno da função (\texttt{dobro * 4}).
+
+Esta sintaxe de definição de funções serve tanto para funções anônimas quanto para
+funções nomeadas. Para definir uma função nomeada, basta dar um nome à função, como
+mostra o \autoref{lst:funcoes-nomeadas}.
+
+\begin{lstlisting}[label={lst:funcoes-nomeadas},caption={Exemplo de como definir uma função nomeada}]
+somaEMultiplicaPor8 : Number -> Number -> Number
+somaEMultiplicaPor8 =
+    \argumento1 argumento2 ->
+        soma = argumento1 + argumento2
+        dobro = soma * 2
+        dobro * 4
+\end{lstlisting}
+
+O \autoref{lst:funcoes-nomeadas} também mostra como definir o tipo de uma função.
+Basta repetir o nome da função, seguido dos tipos dos argumentos e do tipo de retorno,
+separados por \texttt{->}. O último tipo é o tipo de retorno.
+
+Incluir assinaturas de funções é opcional, pois Ipe consegue inferir o tipo de
+qualquer programa válido. Porém, adicionar as assinaturas de tipo pode ajudar a
+produzir melhores erros de compilação, e também pode ajudar a documentar o código.
+
+O último tipo de definição é o de constantes. Porém, na verdade, constantes são
+apenas funções que recebem 0 argumentos. O \autoref{lst:constantes} mostra como
+definir uma constante.
+
+\begin{lstlisting}[label={lst:constantes},caption={Exemplo de como definir uma constante}]
+resposta : Number
+resposta = 42
+\end{lstlisting}
+
+Para executar uma função, passamos os argumentos, separados por espaço (sem parênteses
+e sem vírgulas), como mostra o \autoref{lst:chamando-funcoes}.
+
+\begin{lstlisting}[label={lst:chamando-funcoes},caption={Exemplo de como chamar uma função}]
+numero96 : Number
+numero96 = somaEMultiplicaPor8 4 8
+\end{lstlisting}
+
+
+\section{Pattern matching}\label{sec:pattern-matching}
+
+\textit{Pattern matching} é o que possibilita que usemos todos os poderes dos
+tipos que definimos na \autoref{sec:tipos}. Com \textit{pattern matching}, podemos
+extrair dados de tipos complexos. Diferente da maioria das linguagens, Ipe não
+possui instruções \texttt{if}. Em vez disso, podemos usar \textit{pattern matching},
+embora seja recomendado que usemos tipos específicos do contexto da aplicação ao
+invés de criar um tipo booleano (que não existe nativamente na linguagem).
+O \autoref{lst:pattern-match-if} mostra como podemos fazer o mesmo que uma
+instrução \texttt{if} usando a instrução \texttt{match ... with}.
+
+
+\begin{lstlisting}[label={lst:pattern-match-if},caption={Substituto de if usando \textit{pattern matching}}]
+type union Bool =
+    | True
+    | False
+
+greet : Bool -> String
+greet =
+    \isHuman ->
+        match isHuman with
+            | True -> "Hello, human!"
+            | False -> "Beep boop"
+\end{lstlisting}
+
+Porém, o \autoref{lst:pattern-match-correct} mostra uma versão mais idiomática,
+que usa um tipo específico para o contexto da aplicação.
+
+\begin{lstlisting}[label={lst:pattern-match-correct},caption={Maneira idiomática da função greet}]
+type union Being =
+    | Human
+    | Robot
+
+greet : Being -> String
+greet =
+    \being ->
+        match being with
+            | Human -> "Hello, human!"
+            | Robot -> "Beep boop"
+\end{lstlisting}
+
+Podemos usar a instrução \texttt{match ... with} com qualquer tipo de dado! Por
+exemplo, podemos usar \textit{pattern matching} com \texttt{Number}s, como mostra
+o \autoref{lst:pattern-match-number}.
+
+\begin{lstlisting}[label={lst:pattern-match-number},caption={Pattern matching com números}]
+fibonacci : Number -> Number
+fibonacci =
+    \n ->
+        match n with
+            | 0 -> 0
+            | 1 -> 1
+            | _ -> fibonacci (n - 1) + fibonacci (n - 2)
+\end{lstlisting}
+
+\section{Operadores}
+
+A tabela \autoref{tab:operadores} apresenta todos os operadores disponíveis na
+linguagem Ipe. Embora os operadores tenham uma assinatura de tipo como qualquer
+outra função, eles são usados de maneira infixa. Ou seja, o operador \texttt{+}
+possui a assinatura \texttt{Number -> Number -> Number}. Poderíamos definir uma
+função \texttt{soma} com a mesma assinatura, e usar como \texttt{soma 1 2}. Com
+os operadores, o primeiro argumento vai à esquerda do operador, e o segundo à direita,
+como em \texttt{1 + 2}.
+
+\begin{table}[htb]
+    \caption[Operadores em Ipe]{Operadores em Ipe}
+    \label{tab:operadores}
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{p{2.03cm}p{6.10cm}p{6.10cm}}
+            \toprule
+            \textbf{Operador} & \textbf{Assinatura}                 & \textbf{Descrição}                 \\
+            \midrule
+            +                 & \texttt{Number -> Number -> Number} & Soma dois números                  \\
+            -                 & \texttt{Number -> Number -> Number} & Subtrai dois números               \\
+            /                 & \texttt{Number -> Number -> Number} & Divide dois números                \\
+            *                 & \texttt{Number -> Number -> Number} & Multiplica dois números            \\
+            \textasciicircum  & \texttt{Number -> Number -> Number} & Eleva o primeiro número ao segundo \\
+            |>                & \texttt{a -> (a -> b) -> b}         & Aplica um argumento a uma função   \\
+            <|                & \texttt{(a -> b) -> a -> b}         & Aplica uma função a um argumento   \\
+            \bottomrule
+        \end{tabular}
+    }
+\end{table}
+
+Podemos ver que Ipe possui um baixo número de operadores. Isso é proposital, pois
+queremos que a linguagem seja o mais simples possível. Isso também é uma consequência
+de não termos o tipo booleano na linguagem.
+
+Da tabela, talvez os operadores com maior destaque são |> e <|. O \autoref{lst:pipes}
+ajuda a ilustrar o uso deles.
+
+\begin{lstlisting}[label={lst:pipes},caption={Exemplos de uso dos operadores de pipe}]
+comPipeDireito : Number -> Number -> Number -> Number
+comPipeDireito =
+    \n1 n2 n3 -> operacao3 n3 |> operacao2 n2 |> operacao1 n1
+
+// é equivalente a
+
+comPipeEsquerdo : Number -> Number -> Number -> Number
+comPipeEsquerdo =
+    \n1 n2 n3 -> operacao1 n1 <| operacao2 n2 <| operacao3 n3
+
+// é equivalente a
+
+semPipe : Number -> Number -> Number -> Number
+semPipe =
+    \n1 n2 n3 -> operacao1 n1 (operacao2 n2 (operacao3 n3))
+\end{lstlisting}
+
