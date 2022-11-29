@@ -3,13 +3,115 @@
 \chapter{Programas em Ipe}
 \phantomsection
 
+Para facilitar o desenvolvimento de aplicações Ipe, todos os programas contam com
+bibliotecas padrão, que são apresentadas na \autoref{sec:libpadrao}. Ademais, para
+manter a pureza dos programas Ipe, a linguagem disponibiliza um ambiente que
+faz a gerência de efeitos colaterais, como acesso a disco ou rede. Esse ambiente
+é apresentado na \autoref{sec:runtime}.
 
-\section{Bibliotecas padrão}
+\section{Bibliotecas padrão}\label{sec:libpadrao}
+
+Ipe oferece módulos para facilitar o uso de seus tipos primitivos (\texttt{Number}
+e \texttt{String}), além de módulos para manipulação de listas e dicionários, e
+representação de dados opcionais. Essas bibliotecas podem utilizar código Javascript
+(a linguagem alvo da compilação) para utilizar otimizações e acessar dados que
+não seriam possíveis de acessar em Ipe. Nem todas as bibliotecas serão apresentadas.
+
 \subsection{Number}
-compare : Number -> Number -> Bigger | Equal | Greater
+
+Este módulo contém algumas funções para manipulação de números, como arrendondamento.
+Além disso, como Ipe não possui operadores lógicos (em especial \texttt{==} e \texttt{!=}),
+este módulo oferece funções e tipos para comparar números, como mostra o \autoref{lst:number-compare}.
+
+\begin{lstlisting}[label={lst:number-compare},caption={Comparação de números em Ipe}]
+type union CompareResult =
+    | Smaller
+    | Equal
+    | Greater
+
+compare : Number -> Number -> CompareResult
+\end{lstlisting}
+
 \subsection{String}
-\subsection{List}
-\subsection{Dict}
+
+O módulo de \texttt{String} contém funções para manipulação de strings, como
+concatenação, busca de substrings, e conversão para maiúsculas e minúsculas.
+
 \subsection{Maybe e Result}
 
-\section{Runtime}
+Como Ipe não possui nenhum tipo de exceção ou \texttt{null}, os módulos \texttt{Maybe}
+e \texttt{Result} são utilizados para representar valores opcionais e resultados
+de funções que podem falhar, respectivamente. O \autoref{lst:maybe-result-def}
+mostra a definição destes tipos.
+
+\begin{lstlisting}[label={lst:maybe-result-def},caption={Definição de \texttt{Maybe} e \texttt{Result}}]
+type union Maybe content =
+    | Nothing
+    | Just content
+
+type union Result error ok =
+    | Error error
+    | Ok ok
+\end{lstlisting}
+
+
+\subsection{List}
+
+O módulo de \texttt{List} define uma das principais estruturas de dado de Ipe,
+além de funções para manipular listas. Em Ipe, listas são representadas como
+listas encadeadas, como mostra o \autoref{lst:list-def}
+
+\begin{lstlisting}[label={lst:list-def},caption={Definição de listas em Ipe}]
+type opaque List element =
+    | Empty
+    | Node element (List element)
+\end{lstlisting}
+
+\subsection{Dict}
+
+Dicionários são coleções de chave-valor dinâmicos. O módulo \texttt{Dict} define
+o tipo \texttt{Dict} e funções para manipular dicionários. Por questões de performance
+e simplicidade, dicionários são implementados em Javascript.
+
+\subsection{Subscription}
+
+O tipo \texttt{Subscription} é usado pelo ambiente de execução (discutido na
+\autoref{sec:runtime}) para sinalizar eventos que ocorrem no sistema e o programa
+pode escolher ser notificado para tomar alguma ação.
+
+\subsection{Task}
+
+\textit{Tasks} (ou tarefas) são funções que solicitam ações no mundo exterior para
+o ambiente de execução. Esse módulo disponibiliza funções para manipular tarefas,
+como usar o resultado de uma como entrada de outra. O \autoref{lst:task-example}
+mostra um exemplo de sequenciamento de tarefas.
+
+\begin{lstlisting}[label={lst:task-example},caption={Exemplo de sequenciamento de tarefas}]
+uploadFile : String -> String -> Task Error String
+uploadFile =
+    \fileId destinationUrl ->
+        Db.getFilePathById fileId
+        |> Task.andThen (\filePath -> File.read filePath)
+        |> Task.andThen (\fileContent -> uploadFile fileContent destinationUrl)
+\end{lstlisting}
+
+A função acima recebe um identificador de arquivo e uma URL de destino, e lê
+o caminho do arquivo no banco de dados, lê o arquivo, e envia o conteúdo para
+a URL de destino. A função \texttt{Task.andThen} é usada para encadear as tarefas,
+passando o resultado de uma para a outra. Este código é apenas um exemplo, pois
+na realidade, teríamos que lidar com erros (usando o tipo \texttt{Result}), e
+não apenas com o caso de sucesso.
+
+
+\section{Runtime}\label{sec:runtime}
+
+O \textit{Runtime} (ambiente de execução) é o responsável por realizar efeitos
+colaterais, que podem ser executar \texttt{Tasks}, ou sinalizar o programa quando
+uma \texttt{Subscription} for ativada. Por exemplo, o \textit{Runtime} é responsável
+por ler o conteúdo de um arquivo e receber e enviar requisições HTTP. O \textit{Runtime}
+é implementado em Javascript, e ele converte \texttt{Tasks} em código Javascript,
+e retorna o resultado para o programa Ipe. Similarmente, quando um programa Ipe
+adiciona uma nova \texttt{Subscription}, o \textit{Runtime} é responsável por
+gerar Javascript que avise o programa Ipe quando necessário.
+
+% TODO - Adicionar uma figura
