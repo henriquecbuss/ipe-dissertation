@@ -42,18 +42,18 @@ arquivo, que começa com letra maiúscula e termina com a extensão \texttt{.ipe
 definições (mas ao menos uma), e cada módulo pode exportar várias funções (cada módulo
 deve exportar ao menos uma definição). Falaremos mais sobre definições na
 \autoref{sec:definicoes}. Para declarar um módulo, a primeira linha do arquivo deve
-ser no formato \texttt{module NomeDoModulo exports {lista de definições exportadas}}.
+ser no formato \texttt{module NomeDoModulo exports <lista de definições exportadas>}.
 Módulos dentro de pastas devem conter os nomes das pastas, separados por pontos.
 Por exemplo, o arquivo \texttt{Pasta1/Pasta2/Modulo.ipe} deve conter a linha
-\texttt{module Pasta1.Pasta2.Modulo exports {lista de definições exportadas}}.
+\texttt{module Pasta1.Pasta2.Modulo exports <lista de definições exportadas>}.
 A seguir, demonstramos alguns tipos de definição de módulo.
 
 \begin{lstlisting}[label={lst:modulos},caption={Exemplo de módulos}]
 module Main exports [ main ]
 \end{lstlisting}
 
-Aqui, o módulo \texttt{Main} reside no arquivo \texttt{Main.ipe}, e exporta a
-definição chamada \texttt{main}.
+No \autoref{lst:modulos}, o módulo \texttt{Main} reside no arquivo \texttt{Main.ipe},
+e exporta a definição chamada \texttt{main}.
 
 \begin{lstlisting}[label={lst:modulos2},caption={Exemplo de módulo em subpasta que exporta várias definições}]
 module Pasta1.Pasta2.Modulo exports
@@ -68,7 +68,7 @@ No \autoref{lst:modulos2}, o módulo \texttt{Pasta1.Pasta2.Modulo} reside no arq
 \texttt{Modulo.ipe}, que está dentro da pasta \texttt{Pasta2}, que está dentro da
 pasta \texttt{Pasta1}. O módulo exporta as definições \texttt{funcaoA}, \texttt{funcaoB},
 \texttt{funcaoC} e \texttt{tipoA}. A lista de exportações pode percorrer múltiplas
-linhas.
+linhas, e a ordem em que as definições aparecem não import, e a ordem em que as definições aparecem não importa.
 
 \begin{lstlisting}[label={lst:modulos3},caption={Exemplo de módulo com comentário de documentação}]
 module ModuloComComentario exports [ funcaoA ]
@@ -117,10 +117,11 @@ que representam números (inteiros e reais), cadeias de caracteres, e valores qu
 nunca podem ser construídos respectivamente. Números podem ter um ponto,
 para separar as casas decimais. \texttt{String}s são definidas entre aspas simples.
 
-Além disso, o tipo \texttt{Record} representa uma coleção de pares chave-valor
-pré-definidos. \texttt{Records} são construídos entre chaves, e cada par chave-valor
-é separado por vírgula. As chaves e seus valores são separados por dois pontos.
-Para acessar um elemento de um \texttt{Record}, basta usar a sintaxe \texttt{record.chave}
+Além disso, existe o tipo \texttt{Record}, que representa uma coleção de pares
+chave-valor pré-definidos. \texttt{Records} são construídos entre chaves, e cada
+par chave-valor é separado por vírgula. As chaves e seus valores são separados por
+dois pontos. Para acessar um elemento de um \texttt{Record}, basta usar a sintaxe
+\texttt{record.chave}
 
 
 Em Ipe, todos os valores e todas as definições são tipados (possuem um tipo). Para
@@ -140,13 +141,14 @@ Ipe permite três modalidades de novos tipos:
 \begin{itemize}
     \item Apelidos: são usados para dar um novo nome a algum outro tipo qualquer.
           São úteis para abreviar tipos compridos, como \texttt{Record}s com vários
-          campos. Para definir um novo apelido, usamos \texttt{type alias}.
+          campos. Para definir um novo apelido, usamos \texttt{type alias}, como
+          vimos no \autoref{lst:type-alias}
     \item Uniões: são usados para definir novos tipos, e são definidos com \texttt{type union}.
           Discutiremos mais sobre uniões no \autoref{lst:type-unions}.
     \item Opaco: são iguais às uniões, mas suas variantes não são exportadas para
           outros módulos, ou seja, tipos opacos só podem ser construídos e manipulados
           no módulo onde foram definidos. Tipos opacos são úteis para definir uma interface
-          específica de como utilizar tipos, pois seus módulos podem exportar funções
+          específica ao redor de tipos, pois seus módulos podem exportar funções
           que manipulam os tipos de forma específica, e é impossível que eles sejam manipulados
           de qualquer outra maneira. São definidos com \texttt{type opaque}.
 \end{itemize}
@@ -157,7 +159,7 @@ type alias Pessoa = { nome : String, idade : Number }
 \end{lstlisting}
 
 Um apelido de tipo serve simplesmente para abreviar um tipo. Outras definições
-poderiam se referir ao tipo \texttt{{ nome: String, idade : Number }} simplesmente
+poderiam se referir ao tipo \texttt{\{ nome: String, idade : Number \}} simplesmente
 como \texttt{Pessoa}.
 
 \begin{lstlisting}[label={lst:type-unions},caption={Exemplo de união de tipos}]
@@ -173,8 +175,7 @@ type union Usuario =
 
 Podemos ver que as uniões de tipos são definidas por uma coleção de uma ou mais
 etiquetas (\textit{tags}, em inglês), e cada etiqueta pode ter um \texttt{Record}
-como argumento, ou não. Veremos mais como utilizar uniões de tipos na
-\autoref{sec:pattern-matching}.
+como argumento. Veremos mais como utilizar uniões de tipos na \autoref{sec:pattern-matching}.
 
 \begin{lstlisting}[label={lst:type-opaque},caption={Exemplo de tipos opacos}]
 type opaque Permissao =
@@ -190,14 +191,14 @@ type opaque Usuario =
 Tipos opacos são definidos e funcionam exatamente como uniões de tipos, mas suas
 etiquetas não são exportadas para outros módulos.
 
-O nome dos tipos é sempre escrito com a primeira letra maiúscula. Isso é uma convenção
-para distinguir tipos de outras definições.
+O nome de um tipo é sempre escrito com a primeira letra maiúscula. Isso é uma convenção
+para distinguir tipos de funções.
 
 \subsubsection{Parâmetros de tipos}
 
-Ipe permite definir tipos que recebem outros tipos como parâmetros. É assim que
-estruturas como \texttt{List}s e \texttt{Dict}s funcionam -- elas recebem parâmetros
-de tipo para poderem ser genéricas. Todos os tipos mencionados acima (apelidos,
+Ipe permite definir tipos que recebem outros tipos como parâmetro. É assim que
+estruturas como \texttt{Lists} e \texttt{Dicts} funcionam -- elas recebem parâmetros
+de tipo para que possam ser genéricas. Todos os tipos mencionados acima (apelidos,
 uniões e tipos opacos) podem receber parâmetros de tipo. Os nomes dos parâmetros
 de tipos podem ser qualquer identificador que comece com uma letra minúscula. O
 \autoref{lst:parametros-tipos} mostra como definir um tipo com parâmetro.
@@ -217,7 +218,7 @@ números.
 
 \subsection{Funções}
 
-Enquanto tipos são usados para definir modelar modelos e domínios, funções são
+Enquanto tipos são usados para modelar modelos e domínios, funções são
 usadas para manipular esses modelos e domínios. Juntos, funções e tipos são a
 base da programação funcional. Diferentemente de outras linguagens, Ipe possui
 uma única forma de definir funções, como mostra o \autoref{lst:funcoes}.
@@ -232,8 +233,9 @@ uma única forma de definir funções, como mostra o \autoref{lst:funcoes}.
 Na linha 1, definimos os argumentos da função (\texttt{argumento1} e \texttt{argumento2}).
 Argumentos podem receber qualquer identificador que comece com uma letra minúscula.
 Nas linhas 2 e 3, definimos duas variáveis locais (\texttt{soma} e \texttt{dobro}).
-Podemos incluir quantas declarações quisermos no corpo da função. A expressão da
-última linha define o retorno da função (\texttt{dobro * 4}).
+Podemos incluir quantas declarações quisermos no corpo da função, mas as variáveis
+declaradas devem ter nomes únicos (não podem repetir o nome de outra variável). A
+expressão da última linha define o retorno da função (\texttt{dobro * 4}).
 
 Esta sintaxe de definição de funções serve tanto para funções anônimas quanto para
 funções nomeadas. Para definir uma função nomeada, basta dar um nome à função, como
@@ -256,9 +258,8 @@ Incluir assinaturas de funções é opcional, pois Ipe consegue inferir o tipo d
 qualquer programa válido. Porém, adicionar as assinaturas de tipo pode ajudar a
 produzir melhores erros de compilação, e também pode ajudar a documentar o código.
 
-O último tipo de definição é o de constantes. Porém, na verdade, constantes são
-apenas funções que recebem 0 argumentos. O \autoref{lst:constantes} mostra como
-definir uma constante.
+O último tipo de definição é o de constantes, que, na verdade, são apenas funções
+que recebem 0 argumentos. O \autoref{lst:constantes} mostra como definir uma constante.
 
 \begin{lstlisting}[label={lst:constantes},caption={Exemplo de como definir uma constante}]
 resposta : Number
@@ -273,15 +274,49 @@ numero96 : Number
 numero96 = somaEMultiplicaPor8 4 8
 \end{lstlisting}
 
+Podemos usar parênteses para definir expressões maiores, como mostra o
+\autoref{lst:chamando-funcoes-com-expressoes}.
+
+\begin{lstlisting}[label={lst:chamando-funcoes-com-expressoes},caption={Exemplo de como chamar uma função com uma expressões maiores}]
+numero96 : Number
+numero96 = somaEMultiplicaPor8 (2 + 2) ((1 + 1) * 4)
+\end{lstlisting}
+
+Também é possível passar funções como argumento, como demonstrado no \autoref{lst:chamando-funcoes-higher-order}.
+
+\begin{lstlisting}[label={lst:chamando-funcoes-higher-order},caption={Exemplo de como passar uma função como argumento}]
+type List element =
+    | Empty
+    | Node { head : element, tail : List element }
+
+map : (element -> mappedElement) -> List element -> List mappedElement
+map =
+    \mapFn list ->
+        match list with
+            | Empty -> Empty
+            | Node node ->
+                Node { head = mapFn node.head, tail = map mapFn node.tail }
+
+soma2 : Number -> Number
+soma2 =
+    \x -> x + 2
+
+soma2EmLista : List Number -> List Number
+soma2EmLista =
+    \lista -> map soma2 lista
+
+soma2EmListaAnonimo : List Number -> List Number
+soma2EmListaAnonimo =
+    \lista -> map (\x -> x + 2) lista
+\end{lstlisting}
+
 
 \section{Pattern matching}\label{sec:pattern-matching}
 
 \textit{Pattern matching} é o que possibilita que usemos todos os poderes dos
 tipos que definimos na \autoref{sec:tipos}. Com \textit{pattern matching}, podemos
 extrair dados de tipos complexos. Diferente da maioria das linguagens, Ipe não
-possui instruções \texttt{if}. Em vez disso, podemos usar \textit{pattern matching},
-embora seja recomendado que usemos tipos específicos do contexto da aplicação ao
-invés de criar um tipo booleano (que não existe nativamente na linguagem).
+possui instruções \texttt{if}. Em vez disso, podemos usar \textit{pattern matching}.
 O \autoref{lst:pattern-match-if} mostra como podemos fazer o mesmo que uma
 instrução \texttt{if} usando a instrução \texttt{match ... with}.
 
@@ -299,7 +334,7 @@ greet =
             | False -> "Beep boop"
 \end{lstlisting}
 
-Porém, o \autoref{lst:pattern-match-correct} mostra uma versão mais idiomática,
+O \autoref{lst:pattern-match-correct} mostra uma versão mais idiomática,
 que usa um tipo específico para o contexto da aplicação.
 
 \begin{lstlisting}[label={lst:pattern-match-correct},caption={Maneira idiomática da função greet}]
@@ -316,7 +351,7 @@ greet =
 \end{lstlisting}
 
 Podemos usar a instrução \texttt{match ... with} com qualquer tipo de dado! Por
-exemplo, podemos usar \textit{pattern matching} com \texttt{Number}s, como mostra
+exemplo, podemos usar \textit{pattern matching} com \texttt{Numbers}, como mostra
 o \autoref{lst:pattern-match-number}.
 
 \begin{lstlisting}[label={lst:pattern-match-number},caption={Pattern matching com números}]
@@ -331,11 +366,11 @@ fibonacci =
 
 \textit{Pattern matching} em Ipe é exaustivo, ou seja, todas as variações de um
 tipo devem ser tratadas. No \autoref{lst:pattern-match-number}, precisaríamos
-tratar todos os números possíveis. A primeira linha que resultar em um \textit{match}
-é a linha executada. Ipe também possibilita o uso de \texttt{\_} para fazer \textit{match}
-em qualquer valor de um tipo, o que é útil para tipos com infinitas etiquetas, como
-\texttt{Number} e \texttt{String}, mas também pode ser usado em números com etiquetas
-finitas.
+tratar todos os números possíveis. A primeira linha (de cima para baixo) que
+resultar em um \textit{match} é a linha executada. Ipe também possibilita o uso
+de \texttt{\_} para fazer \textit{match} em qualquer valor de um tipo, o que é
+útil para tipos com infinitas etiquetas, como \texttt{Number} e \texttt{String},
+mas também pode ser usado em tipos com etiquetas finitas.
 
 \section{Operadores}
 

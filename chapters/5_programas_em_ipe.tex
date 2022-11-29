@@ -59,12 +59,29 @@ type union Result error ok =
 
 O módulo de \texttt{List} define uma das principais estruturas de dado de Ipe,
 além de funções para manipular listas. Em Ipe, listas são representadas como
-listas encadeadas, como mostra o \autoref{lst:list-def}
+listas encadeadas, que podem ser criadas com elementos entre colchetes,
+como mostra o \autoref{lst:list-def}.
 
 \begin{lstlisting}[label={lst:list-def},caption={Definição de listas em Ipe}]
-type opaque List element =
-    | Empty
-    | Node element (List element)
+type List element =
+| Empty
+| Node { head : element, tail : List element }
+
+map : (element -> mappedElement) -> List element -> List mappedElement
+map =
+    \mapFn list ->
+        match list with
+            | Empty -> Empty
+            | Node node ->
+                Node { head = mapFn node.head, tail = map mapFn node.tail }
+
+empty : List element
+empty = []
+
+singleton : element -> List element
+singleton =
+    \element -> [ element ]
+
 \end{lstlisting}
 
 \subsection{Dict}
@@ -91,8 +108,8 @@ uploadFile : String -> String -> Task Error String
 uploadFile =
     \fileId destinationUrl ->
         Db.getFilePathById fileId
-        |> Task.andThen (\filePath -> File.read filePath)
-        |> Task.andThen (\fileContent -> uploadFile fileContent destinationUrl)
+        |> Task.andThen File.read
+        |> Task.andThen (\fileContent -> Http.post destinationUrl { body = fileContent })
 \end{lstlisting}
 
 A função acima recebe um identificador de arquivo e uma URL de destino, e lê
@@ -102,9 +119,10 @@ passando o resultado de uma para a outra. Este código é apenas um exemplo, poi
 na realidade, teríamos que lidar com erros (usando o tipo \texttt{Result}), e
 não apenas com o caso de sucesso.
 
-Para de realizar os efeitos colaterais de uma \texttt{Task}, usamos a função
+Para realizar os efeitos colaterais de uma \texttt{Task}, usamos a função
 \texttt{Task.perform : (Result error ok -> event) -> Task error ok -> Effect event},
-que converte uma \texttt{Task} em um \texttt{Effect}.
+que converte uma \texttt{Task} em um \texttt{Effect}, que pode ser enviado ao
+\textit{runtime}.
 
 
 \section{Runtime e arquitetura}\label{sec:runtime}
@@ -120,7 +138,7 @@ pela arquitetura Elm. Programas Ipe são representados por três partes principa
     \item \textit{update}: função que recebe um evento e o estado atual do programa
           (\texttt{Model}). Eventos também são representados por um tipo definido pelo
           programador, e tipicamente são uniões de tipos. A função \texttt{update} possui
-          a anotação \texttt{update : event -> model -> { model : model, effect : Effect event }},
+          a anotação \texttt{update : event -> model -> \{ model : model, effect : Effect event \}},
           ou seja, recebe um evento e o estado atual do programa, e retorna o novo estado,
           com possíveis efeitos colaterais.
     \item \textit{subscribe}: função que possibilita o programa a se inscrever
@@ -136,7 +154,8 @@ O \textit{Runtime} é implementado em Javascript, e ele converte \texttt{Tasks} 
 código Javascript, e retorna o resultado para o programa Ipe.  Similarmente, quando
 um programa Ipe adiciona uma nova \texttt{Subscription}, o \textit{Runtime} é
 responsável por gerar Javascript que avise o programa Ipe quando necessário. A
-\autoref{fig:runtime} mostra a arquitetura do \textit{Runtime}.
+\autoref{fig:runtime} mostra uma visão geral do \textit{Runtime} se comunicando
+com outras partes do computador.
 
 
 \begin{figure}[htb]

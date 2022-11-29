@@ -37,21 +37,32 @@ linguagem alvo também é uma linguagem de alto nível, como é o caso de Javasc
 o processo de compilação é chamado de transpilação.
 
 Compiladores geralmente funcionam com uma série de etapas. Primeiramente, o
-código fonte é analisado, de forma a garantir que o código fonte é válido de
-acordo com a definição da linguagem fonte. Depois disso, opcionalmente, são
-aplicadas transformações no código. Por exemplo, o compilador pode realizar
-otimizações, ou remover código não utilizado. Por fim, o código fonte é
-transformado para a linguagem alvo. Vamos discutir cada uma dessas etapas em
-maiores detalhes nas seções a seguir.
+código fonte é analisado e transformado em uma \textit{AST}
+(\textit{Abstract Syntax Tree}), de forma a garantir que o código fonte é válido de
+acordo com a definição léxica e sintática da linguagem fonte. Este processo é
+chamado de \textit{parsing}. Em seguida, a \textit{AST} é analisada para fazer
+a checagem de tipos (ou \textit{type checking}, em inglês).  Depois disso,
+opcionalmente, são aplicadas transformações no código. Por exemplo, o compilador
+pode realizar otimizações, ou remover código não utilizado. Por fim, a AST e o
+código fonte são usados para produzir código na linguagem alvo. Vamos discutir
+cada uma dessas etapas em maiores detalhes nas seções a seguir.
 
 A análise de código fonte é a primeira etapa do processo de compilação, e se
 baseia na \textit{gramática} da linguagem. A gramática de uma linguagem é uma lista
-de regras que dita. Em qualquer uma das etapas, se o compilador encontrar um erro,
-ele deve abortar o processo de compilação e emitir uma mensagem de erro.
+de regras que dita o que é válido na linguagem. Em qualquer uma das etapas, se o
+compilador encontrar um erro, ele deve abortar o processo de compilação e emitir
+uma mensagem de erro.
 
 A análise de código fonte geralmente é dividida em três etapas, descritas a seguir.
 
-\subsection{Análise léxica}
+\subsection{Parsing}
+
+O \textit{parsing} é a primeira etapa da análise de código fonte. Nesta etapa,
+transformamos código em linguagem fonte para uma estrutura que o compilador
+entenda. Normalmente, o código é representado em formato de árvore. Nesta etapa
+da compilação estão as análises léxica e sintática.
+
+\subsubsection{Análise léxica}
 
 A análise léxica é encarregada de dividir o código fonte em \textit{tokens}. Um
 token é uma sequência de caracteres que possui um significado. Por exemplo, a
@@ -59,11 +70,11 @@ palavra \textit{if} é um token, assim como o símbolo \textit{+}. A análise l�
 é responsável por identificar esses tokens, e gerar uma lista deles.
 
 
-\subsection{Análise sintática}
+\subsubsection{Análise sintática}
 
 A análise sintática recebe como entrada a lista de tokens gerada pela análise
 léxica, e verifica se a sequência de tokens é válida de acordo com a gramática da
-linguagem.
+linguagem. Nesse processo, os tokens são organizados em formato de árvore.
 
 \subsection{Análise semântica}
 
@@ -73,7 +84,7 @@ nessa etapa em que o compilador realiza a checagem de tipos, e verifica se todas
 as variáveis usadas no programa foram declaradas.
 
 
-\section{Transformações de código}
+\subsection{Transformações de código}
 
 A análise de código fonte gera dados sobre o programa fonte (tabelas e árvores que
 representam o programa). Durante o processo de compilação, é possível realizar
@@ -81,7 +92,7 @@ transformações no código fonte, de forma a otimizar o programa, ou remover c�
 não utilizado. Por simplicidade, Ipe não fará nenhuma otimização.
 
 
-\section{Geração de código}
+\subsection{Geração de código}
 
 A etapa de geração de código é a etapa final do processo de compilação. Nessa
 etapa, o compilador gera o código alvo a partir dos dados gerados pelas etapas
