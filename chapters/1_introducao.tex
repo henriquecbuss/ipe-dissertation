@@ -14,7 +14,10 @@ ao paradigma de programação funcional. Em contraste com o paradigma de orienta
 a objetos, o paradigma funcional visa simplificar o modelo mental dos programadores,
 focando em funções puras, imutabilidade, e composição de funções (\textcite{functionalprogramming-future}).
 Grandes linguagens de programação orientadas a objetos também estão indo na direção
-da programação funcional, como Java, JavaScript, C\#, e Python.
+da programação funcional, como Java, JavaScript, C\#, e Python. Embora esses
+conceitos possam criar programas mais robustos e mais fáceis de testar, pode ser
+difícil para desenvolvedores acostumados com outros paradigmas a aprenderem esse
+novo modelo mental \cite{promisesoffp}.
 
 O paradigma funcional não é algo concreto - é um conjunto de ideias que podem ser
 adotadas em partes. Enquanto existem linguagens que implementam
@@ -50,15 +53,19 @@ Analisar algumas linguagens de programação utilizadas para criar aplicativos
 \textit{backend}, para coletar algumas práticas comuns, além de identificar
 possíveis problemas ou dificuldades. Com isso, vamos ter uma base
 para criar \textit{Ipe}, com o objetivo de testar o paradigma funcional para o
-desenvolvimento de aplicações \textit{backend}.
+desenvolvimento de aplicações \textit{backend}, especificamente para APIs REST,
+que é como a maioria das aplicações \textit{web} se comunicam entre si.
+
+Além disso, Ipe visa ser uma linguagem simples de se usar, com o objetivo de
+diminuir a barreira de entrada a linguagens funcionais.
 
 \subsection{Objetivos Específicos}
 
 Para cumprir o objetivo geral, precisamos cumprir os seguintes objetivos específicos:
 
 \begin{enumerate}
-      \item Definir os requisitos para uma aplicação \textit{backend}, para servir
-            de modelo.
+      \item Definir os requisitos para uma aplicação \textit{backend} com uma API
+            REST, para servir de modelo.
       \item Implementar esses requisitos em algumas linguagens de programação,
             procurando por padrões, boas práticas, e dificuldades.
       \item Definir a linguagem \textit{Ipe}
@@ -75,9 +82,11 @@ Por questões de limitação de tempo, a aplicação modelo será bem simples, e
 necessariamente representará uma aplicação real. Além disso, \textit{Ipe} é apenas
 uma prova de conceito. Não é o objetivo deste trabalho criar uma linguagem de
 programação completa, com otimizações, ferramentas, e bibliotecas extensas. O
-objetivo é explorar as ideias funcionais no desenvolvimento \textit{backend}. Por
-conta disso, a linguagem \textit{Ipe} não deve ser usada no mundo real, em projetos
-reais.
+objetivo é explorar as ideias da programação funcional no desenvolvimento
+\textit{backend}. Por conta disso, a linguagem \textit{Ipe} não deve ser usada
+no mundo real, em projetos reais. Dito isso, ainda queremos representar um caso
+de uso comum para sistemas \textit{backend}, e é por isso que temos o objetivo
+de construir uma API REST em Ipe.
 
 O compilador de \textit{Ipe} deve funcionar em sistema operacional macOS, onde
 vai ser desenvolvido, e pode não funcionar em outros sistemas.
@@ -108,4 +117,5 @@ de tipos, estruturas de dados, funções.
 Vamos desenvolver a aplicação modelo utilizando \textit{Ipe}, além de outras
 pequenas aplicações de exemplo. Vamos discutir as vantagens e desvantagens de
 usar \textit{Ipe} para desenvolver aplicações \textit{backend}, e comparar os
-resultados obtidos com \textit{Ipe} e os resultados obtidos com outras linguagens.
+resultados obtidos com \textit{Ipe} e os resultados obtidos com linguagens orientadas
+a objetos, e também com outras linguagens funcionais.
