@@ -362,6 +362,43 @@ alguns pontos vistos como importantes na linguagem Ipe. Além de analisar cada p
 nas linguagens vistas anteriormente, vamos discutir as lições aprendidas e usadas
 para o desenvolvimento de Ipe.
 
+A \autoref{tab-language-comparisons} apresenta uma comparação entre as
+principais características das linguagens vistas, além do que teremos em Ipe. As
+subseções seguintes discutem alguns aspectos gerais das linguagens em maiores detalhes.
+
+\begin{table}[htb]
+  \caption{Principais características das linguagens analisadas e de Ipe}
+  \label{tab-language-comparisons}
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{p{2.50cm}p{4.00cm}p{2.50cm}p{5.25cm}}
+      \toprule
+      \textbf{Linguagem} & \textbf{Paradigma principal}             & \textbf{Tipagem} & \textbf{Nível de temor \cite{stackoverflowsurvey}} \\
+      \midrule
+      Python             & OO                                       & Dinâmica         & 32,66\%                                            \\
+      C\#                & OO                                       & Estática         & 36,61\%                                            \\
+      Javascript         & OO com protótipos e elementos funcionais & Dinâmica         & 38,54\%                                            \\
+      Elixir             & Funcional                                & Dinâmica         & 24,54\%                                            \\
+      Haskell            & Puramente funcional                      & Estática         & 43,56\%                                            \\
+      Ipe                & Puramente funcional                      & Estática         & --                                                 \\
+      \bottomrule
+    \end{tabular}
+  }
+\end{table}
+
+Podemos ver na \autoref{tab-language-comparisons} que Javascript possui um alto nível de temor (38,54\%). Isso
+provavelmente se dá pelo fato do seu sistema de tipos ser dinâmico e fraco, pois,
+na mesma pesquisa, o nível de temor de Typescript é 12 pontos percentuais menor
+(26,54\%). Haskell é extremamente temida, mas ao mesmo tempo, é a 16\textordfeminine{}
+linguagem mais desejada. Estima-se que isso seja culpa da grande complexidade da
+linguagem, e sua curva de aprendizado íngreme -- muitas pessoas querem conhecer
+a programação funcional, mas encontram grande dificuldade em aprender Haskell.
+Elixir está apenas uma posição acima de Haskell no índice de linguagens mais
+desejadas. Porém, como é uma linguagem funcional com uma barreira de entrada menor,
+é a segunda linguagem mais amada e menos temida. Ipe almeja ser uma linguagem
+puramente funcional, com tipagem forte e estática, como Haskell, mas com uma
+curva de aprendizado mais suave, como Elixir, Javascript e Python.
+
+
 \subsection{Simplicidade e funcionalidades}
 
 Linguagens mais maduras ou mais antigas tendem a ter várias funcionalidades, e
@@ -390,6 +427,13 @@ Neste sentido, podemos utilizar de alguns pontos da filosofia do Python:
 \end{itemize}
 
 \cite{zenofpython}
+
+Que, em tradução livre, significam:
+
+\begin{itemize}
+  \item \textit{Explícito é melhor do que implícito.}
+  \item \textit{Deveria existir uma-- e de preferência apenas uma --maneira óbvia de se fazer algo.}
+\end{itemize}
 
 Também notamos que o uso de \textit{macros}, \textit{decorators} e tipos polimórficos
 dificulta a compreensão do código, pois gera mais código implícito. Ipe tem o objetivo

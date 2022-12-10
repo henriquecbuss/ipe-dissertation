@@ -16,6 +16,8 @@
 % \usepackage{newtxtext}
 % \usepackage{newtxmath}
 
+\usepackage{tablefootnote}
+
 % https://tex.stackexchange.com/questions/182569/how-to-manually-set-where-a-word-is-split
 \hyphenation{Ge-la-im}
 \hyphenation{Cis-la-ghi}
@@ -23,8 +25,8 @@
 % Add missing translations for Portuguese
 % https://tex.stackexchange.com/questions/8564/what-is-the-right-way-to-redefine-macros-defined-by-babel
 \@ifpackageloaded{babel}{\@ifpackagewith{babel}{brazil}{\addto\captionsbrazil{%
-  \renewcommand{\mytextpreliminarylistname}{Breve Sumário}
-}}{}}{}
+      \renewcommand{\mytextpreliminarylistname}{Breve Sumário}
+    }}{}}{}
 \@ifundefined{advisor}{\newcommand{\advisor}[2]{#1}}{}
 
 % Selects a sans serif font family
@@ -90,25 +92,25 @@
 % https://tex.stackexchange.com/questions/148647/how-to-remove-space-before-enumerate
 % https://tex.stackexchange.com/questions/433543/behaviour-of-enumitem-setlist
 \advisor{}{
-    \setlist*[enumerate]{label=\arabic*,}
-    \setlist*[enumerateoptional]{label=\arabic*,}
+  \setlist*[enumerate]{label=\arabic*,}
+  \setlist*[enumerateoptional]{label=\arabic*,}
 
-    % https://tex.stackexchange.com/questions/24454/space-after-float-with-h
-    % https://tex.stackexchange.com/questions/23313/how-can-i-reduce-padding-after-figure
-    \AtBeginEnvironment{figure}{
-      \setlength{\intextsep}{5pt} % Vertical space above & below [h] floats
-      % \setlength{\textfloatsep}{10pt} % Vertical space below (above) [t] ([b]) floats
-      % \setlength{\abovecaptionskip}{10pt}
-      % \setlength{\belowcaptionskip}{5pt}
-    }
+  % https://tex.stackexchange.com/questions/24454/space-after-float-with-h
+  % https://tex.stackexchange.com/questions/23313/how-can-i-reduce-padding-after-figure
+  \AtBeginEnvironment{figure}{
+    \setlength{\intextsep}{5pt} % Vertical space above & below [h] floats
+    % \setlength{\textfloatsep}{10pt} % Vertical space below (above) [t] ([b]) floats
+    % \setlength{\abovecaptionskip}{10pt}
+    % \setlength{\belowcaptionskip}{5pt}
+  }
 
-    % Patch the `abntex2` citacao environment removing the extra space from its top
-    % https://tex.stackexchange.com/questions/300340/topsep-itemsep-partopsep-and-parsep-what-does-each-of-them-mean-and-wha
-    \xpatchcmd{\citacao}
-    {\list{}}
-    {\list{}{\topsep=0pt}}
-    {}
-    {\FAILEDPATCHINGCITACAO}
+  % Patch the `abntex2` citacao environment removing the extra space from its top
+  % https://tex.stackexchange.com/questions/300340/topsep-itemsep-partopsep-and-parsep-what-does-each-of-them-mean-and-wha
+  \xpatchcmd{\citacao}
+  {\list{}}
+  {\list{}{\topsep=0pt}}
+  {}
+  {\FAILEDPATCHINGCITACAO}
 }
 
 
@@ -194,10 +196,10 @@
   \newcommand{\biblatexcitednotimes}{\autocap{n}o citation in the text}
 
   \@ifpackageloaded{babel}{\@ifpackagewith{babel}{brazil}{\addto\captionsbrazil{%
-    \renewcommand{\biblatexcitedntimes}{\autocap{c}itado \arabic{citecounter} vezes}
-    \renewcommand{\biblatexcitedonetime}{\autocap{c}itado uma vez}
-    \renewcommand{\biblatexcitednotimes}{\autocap{n}enhuma citação no texto}
-  }}{}}{}
+        \renewcommand{\biblatexcitedntimes}{\autocap{c}itado \arabic{citecounter} vezes}
+        \renewcommand{\biblatexcitedonetime}{\autocap{c}itado uma vez}
+        \renewcommand{\biblatexcitednotimes}{\autocap{n}enhuma citação no texto}
+      }}{}}{}
   \@ifpackageloaded{biblatex}
   {%
     % https://tex.stackexchange.com/questions/483707/how-to-detect-whether-the-option-citecounter-was-enabled-on-biblatex
@@ -217,13 +219,13 @@
             \printtext
             {%
               \ifnumgreater{\value{citecounter}}{1}
-                {\biblatexcitedntimes}
-                {\biblatexcitedonetime}%
+              {\biblatexcitedntimes}
+              {\biblatexcitedonetime}%
             }%
             \setunit{\addspace}%
             \ifnumgreater{\value{pageref}}{1}
-              {\bibstring{backrefpages}\ppspace}
-              {\bibstring{backrefpage}\ppspace}%
+            {\bibstring{backrefpages}\ppspace}
+            {\bibstring{backrefpage}\ppspace}%
             \printlist[pageref][-\value{listtotal}]{pageref}%
           }%
         }
@@ -367,8 +369,8 @@
       \setlength\beforechapskip{\baselineskip}%
       \renewcommand{\chaptitlefont}{\ABNTEXsectionfont\ABNTEXsectionfontsize}%
     }{%else
-       \setlength{\beforechapskip}{0pt}%
-       \renewcommand{\chaptitlefont}{\ABNTEXchapterfont\ABNTEXchapterfontsize}%
+      \setlength{\beforechapskip}{0pt}%
+      \renewcommand{\chaptitlefont}{\ABNTEXchapterfont\ABNTEXchapterfontsize}%
     }
 
     \renewcommand{\chapnumfont}{\chaptitlefont}
@@ -387,21 +389,21 @@
 
     % Impressão do nome do capítulo
     \renewcommand{\printchaptername}{%
-       \chaptitlefont%
-       \ifthenelse{\boolean{abntex@apendiceousecao}}{\appendixname}{}%
+      \chaptitlefont%
+      \ifthenelse{\boolean{abntex@apendiceousecao}}{\appendixname}{}%
     }
 
     % Impressão do título do capítulo
     \def\printchaptertitle##1{%
       \chaptitlefont%
       \ifthenelse{\boolean{abntex@innonumchapter}}{\centering\ABNTEXchapterupperifneeded{##1}}{%
-      \ifthenelse{\boolean{abntex@apendiceousecao}}{%
-        \centering%
-        \settowidth{\chapternamenumlength}{\printchaptername\printchapternum\afterchapternum}%
-        \ABNTEXchapterupperifneeded{##1}%
-      }{%
-        \settowidth{\chapternamenumlength}{\printchaptername\printchapternum\afterchapternum}%
-        \parbox[t]{\columnwidth-\chapternamenumlength}{\ABNTEXchapterupperifneeded{##1}}}%
+        \ifthenelse{\boolean{abntex@apendiceousecao}}{%
+          \centering%
+          \settowidth{\chapternamenumlength}{\printchaptername\printchapternum\afterchapternum}%
+          \ABNTEXchapterupperifneeded{##1}%
+        }{%
+          \settowidth{\chapternamenumlength}{\printchaptername\printchapternum\afterchapternum}%
+          \parbox[t]{\columnwidth-\chapternamenumlength}{\ABNTEXchapterupperifneeded{##1}}}%
       }%
     }
 
