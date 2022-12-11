@@ -5,7 +5,15 @@
 
 Este capítulo tem o objetivo de definir as características da linguagem Ipe, como
 sintaxe e semântica. As características serão demonstradas principalmente através
-de código Ipe, para exemplificar o uso real.
+de código Ipe, para exemplificar o uso real, seguidos por sua definição sintática.
+Para definir a sintaxe de Ipe, usaremos a notação EBNF (\textit{Extended Backus-Naur Form}),
+como descrito em \cite{ebnfstandard}. Por simplicidade, algumas definições são
+omitidas neste capítulo. Além disso, como iremos fazer o nosso próprio
+\textit{parser}-- ao invés de usar um gerador automático --a gramática não será
+otimizada-- as ferramentas que usaremos para construir o \textit{parser} fazem
+isso por nós --, e alguns detalhes não serão apresentados, como espaços em branco
+e comentários de bloco entre tokens. O \autoref{apendix:ebnf-syntax} contém a
+definição sintática completa da linguagem.
 
 \section{Comentários}
 
@@ -20,19 +28,31 @@ de documentação têm a finalidade de documentar código, e serão usados princ
 futuras ferramentas de análise de código. Por exemplo, ao manter o cursor do
 mouse sobre uma função em um editor de texto, o editor pode mostrar o comentário
 de documentação. No \autoref{lst:comentarios} são demonstrados alguns exemplos
-de comentários.
+de comentários. No \autoref{grammar:comentarios} são apresentados os símbolos
+não terminais que definem comentários.
 
 \begin{lstlisting}[label={lst:comentarios},caption={Exemplos de comentários}]
 // Comentário de linha
 
 /* Comentário de bloco
-    Que pode ter várias linhas
+   Que pode ter várias linhas
 */
 
 /*| Comentário de documentação
     Aqui, podemos descrever uma função ou um módulo 
 */
 \end{lstlisting}
+
+\begin{lstlisting}[label={grammar:comentarios},caption={Definição de comentários em EBNF},escapechar=`,numbers=none]
+`\begin{bnfgrammar}
+    line comment ::= "\slash\slash", \{? qualquer caractere ?\} - "\textbackslash n", "\textbackslash n";
+    ;;
+    block comment ::= "\slash*", \{? qualquer caractere ?\} - "*\slash", "*\slash";
+    ;;
+    doc comment ::= "\slash*$\vert$", \{? qualquer caractere ?\} - "*\slash", "*\slash";
+\end{bnfgrammar}`
+\end{lstlisting}
+
 
 \section{Módulos}
 
@@ -84,7 +104,7 @@ do código.
 
 A vantagem de organizar o código em módulos é que módulos podem importar outros
 módulos, através da palavra-chave \texttt{import}. Isso é demonstrado no
-\autoref{lst:modulos-import}
+\autoref{lst:modulos-import}.
 
 \begin{lstlisting}[label={lst:modulos-import},caption={Exemplo de importação de módulos}]
 module Main exports [ main ]
@@ -101,6 +121,26 @@ módulo com um apelido, usando a palavra-chave \texttt{as}. Isso é útil quando
 um módulo possui um nome muito longo, ou quando outro nome faz mais sentido no
 contexto do módulo atual. Quando um módulo é importado com apelido, seu nome
 original não pode mais ser usado para se referir às definições daquele módulo.
+
+O \autoref{grammar:modulos} mostra a definição de módulos em EBNF.
+
+\begin{lstlisting}[label={grammar:modulos},caption={Definição de módulos em EBNF},escapechar=`,numbers=none]
+`\begin{bnfgrammar}
+    upper identifier ::= uppercase letter, \{letter $\vert$ digit $\vert$ "\_" \};
+    ;;
+    module name ::= \{upper identifier, "."\}, upper identifier;
+    ;;
+    exported item ::= letter, \{letter $\vert$ digit $\vert$ "\_"\};
+    ;;
+    export list ::= "[", \{exported item\}-, "]";
+    ;;
+    module decl ::= "module", module name, "exports", export list;
+    ;;
+    import decl ::= "import", module name, [ "as", module name ];
+    ;;
+    module ::= module decl, [doc comment], \{import decl\};
+\end{bnfgrammar}`
+\end{lstlisting}
 
 \section{Definições}\label{sec:definicoes}
 
@@ -121,18 +161,32 @@ Além disso, existe o tipo \texttt{Record}, que representa uma coleção de pare
 chave-valor pré-definidos. \texttt{Records} são construídos entre chaves, e cada
 par chave-valor é separado por vírgula. As chaves e seus valores são separados por
 dois pontos. Para acessar um elemento de um \texttt{Record}, basta usar a sintaxe
-\texttt{record.chave}
+\texttt{record.chave}.
 
 
 Em Ipe, todos os valores e todas as definições são tipados (possuem um tipo). Para
 demonstrar os tipos dos valores, usamos o caractere \texttt{:}, seguido pelo tipo.
-O \autoref{lst:anotacoes} demonstra a anotação de tipos.
+O \autoref{lst:anotacoes} demonstra a anotação de tipos, enquanto o
+\autoref{grammar:primitives} mostra as regras em EBNF para declaração dos tipos
+primitivos (\texttt{Number}, \texttt{String} e \texttt{Record}).
 
 \begin{lstlisting}[label={lst:anotacoes},caption={Exemplo de anotação de tipos}]
 5 : Number
 3.14 : Number
 'abc' : String
 { a: 1, b: 'abc' } : { a : Number, b : String }
+\end{lstlisting}
+
+\begin{lstlisting}[label={grammar:primitives},caption={Definição dos tipos primitivos em Ipe em EBNF. A regra \texttt{expression} está descrita no \autoref{apendix:ebnf-syntax}},escapechar=`,numbers=none]
+`\begin{bnfgrammar}
+    number ::= ["$-$"], \{digit\}-, [".", \{digit\}-];
+    ;;
+    string ::= "'", \{? qualquer caractere ?\} - ("\textbackslash n" $\vert$ "'"), "'";
+    ;;
+    field decl ::= lower identifier, "$\colon$", expression;
+    ;;
+    record ::= "\{", [field decl, \{",", field decl\}], "\}";
+\end{bnfgrammar}`
 \end{lstlisting}
 
 A verdadeira força do sistema de tipos de Ipe está na definição de novos tipos.
@@ -142,7 +196,7 @@ Ipe permite três modalidades de novos tipos:
     \item Apelidos: são usados para dar um novo nome a algum outro tipo qualquer.
           São úteis para abreviar tipos compridos, como \texttt{Record}s com vários
           campos. Para definir um novo apelido, usamos \texttt{type alias}, como
-          vimos no \autoref{lst:type-alias}
+          no \autoref{lst:type-alias}.
     \item Uniões: são usados para definir novos tipos, e são definidos com \texttt{type union}.
           Discutiremos mais sobre uniões no \autoref{lst:type-unions}.
     \item Opaco: são iguais às uniões, mas suas variantes não são exportadas para
@@ -150,7 +204,8 @@ Ipe permite três modalidades de novos tipos:
           no módulo onde foram definidos. Tipos opacos são úteis para definir uma interface
           específica ao redor de tipos, pois seus módulos podem exportar funções
           que manipulam os tipos de forma específica, e é impossível que eles sejam manipulados
-          de qualquer outra maneira. São definidos com \texttt{type opaque}.
+          de qualquer outra maneira. São definidos com \texttt{type opaque}, como
+          mostra o \autoref{lst:type-opaque}.
 \end{itemize}
 
 
@@ -191,8 +246,8 @@ type opaque Usuario =
 Tipos opacos são definidos e funcionam exatamente como uniões de tipos, mas suas
 etiquetas não são exportadas para outros módulos.
 
-O nome de um tipo é sempre escrito com a primeira letra maiúscula. Isso é uma convenção
-para distinguir tipos de funções.
+O nome de um tipo é sempre escrito com a primeira letra maiúscula, para facilitar
+a distinção entre tipos e funções.
 
 \subsubsection{Parâmetros de tipos}
 
@@ -214,7 +269,32 @@ O tipo \texttt{Pilha} recebe um parâmetro de tipo chamado \texttt{elemento}. De
 da definição de \texttt{Pilha}, podemos utilizar \texttt{elemento} para nos referirmos
 ao tipo que foi passado como parâmetro. Com esse mecanismo, podemos definir tipos
 genéricos. O tipo \texttt{PilhaDeNumeros} representa uma pilha especificamente de
-números.
+números. O \autoref{grammar:custom-types} mostra a gramática para a definição de
+apelidos, uniões e tipos opacos.
+
+\begin{lstlisting}[label={grammar:custom-types},caption={Definição de novos tipos em EBNF},escapechar=`,numbers=none]
+`\begin{bnfgrammar}
+    custom type ::= \{upper identifier, "."\}, upper identifier, \{any type\};
+    ;;
+    any type ::= custom type
+               | lower identifier
+               | record annotation;
+    ;;
+    record ann field ::= lower identifier, "$\colon$", any type;
+    ;;
+    record annotation ::= "\{", [record ann field, \{",", record ann field\}] "\}";
+    ;;
+    alias ::= upper identifier, parameters, "=", any type;
+    ;;
+    union ::= upper identifier, parameters, "=", \{constructor\}-;
+    ;;
+    constructor ::= "$\vert$", upper identifier, [record annotation];
+    ;;
+    new type ::= "type alias", alias
+        | "type union", union
+        | "type opaque", union;
+\end{bnfgrammar}`
+\end{lstlisting}
 
 \subsection{Funções}
 
@@ -254,12 +334,13 @@ O \autoref{lst:funcoes-nomeadas} também mostra como definir o tipo de uma funç
 Basta repetir o nome da função, seguido dos tipos dos argumentos e do tipo de retorno,
 separados por \texttt{->}. O último tipo é o tipo de retorno.
 
-Incluir assinaturas de funções é opcional, pois Ipe consegue inferir o tipo de
+Incluir assinaturas de funções é opcional, pois Ipe consegue inferir os tipos de
 qualquer programa válido. Porém, adicionar as assinaturas de tipo pode ajudar a
 produzir melhores erros de compilação, e também pode ajudar a documentar o código.
 
 O último tipo de definição é o de constantes, que, na verdade, são apenas funções
-que recebem 0 argumentos. O \autoref{lst:constantes} mostra como definir uma constante.
+que recebem zero argumentos. O \autoref{lst:constantes} mostra como definir uma
+constante.
 
 \begin{lstlisting}[label={lst:constantes},caption={Exemplo de como definir uma constante}]
 resposta : Number
@@ -310,6 +391,25 @@ soma2EmListaAnonimo =
     \lista -> map (\x -> x + 2) lista
 \end{lstlisting}
 
+O \autoref{grammar:functions} mostra a definição sintática de funções em Ipe.
+Podemos ver que funções são apenas estruturas que recebem argumentos, e retornam
+uma expressão.
+
+\begin{lstlisting}[label={grammar:functions},caption={Definição de funções em EBNF, onde \texttt{tl} significa \textit{top level}},escapechar=`,numbers=none]
+`\begin{bnfgrammar}
+    fn args ::= \{lowercase identifier\};
+    ;;
+    function ::= "\textbackslash", fn args, "$-$>", \{attribution\}, expression;
+    ;;
+    tl annotation ::= lowercase identifier, "$\colon$", \{any type, "$-$>"\}, any type;
+    ;;
+    attribution ::= lowercase identifier, "$=$", expression;
+    ;;
+    tl left ::= [doc comment], [tl annotation], lowercase identifier;
+    ;;
+    tl value ::= tl left "$=$", expression;
+\end{bnfgrammar}`
+\end{lstlisting}
 
 \section{Pattern matching}\label{sec:pattern-matching}
 
@@ -370,16 +470,33 @@ tratar todos os números possíveis. A primeira linha (de cima para baixo) que
 resultar em um \textit{match} é a linha executada. Ipe também possibilita o uso
 de \texttt{\_} para fazer \textit{match} em qualquer valor de um tipo, o que é
 útil para tipos com infinitas etiquetas, como \texttt{Number} e \texttt{String},
-mas também pode ser usado em tipos com etiquetas finitas.
+mas também pode ser usado em tipos com etiquetas finitas. O \autoref{grammar:pattern-matching}
+mostra a definição sintática de \textit{pattern matching} em Ipe.
+
+\begin{lstlisting}[label={grammar:pattern-matching},caption={Definição de \textit{pattern matching} em EBNF},escapechar=`,numbers=none]
+`\begin{bnfgrammar}
+    type destruct ::= \{upper identifier, "."\}, upper identifier, \{pattern\};
+    ;;
+    pattern ::= "\_"
+        | number
+        | string
+        | type destruct;
+    ;;
+    match case ::= "$\vert$", pattern, "$-$>", \{attribution\}, expression;
+    ;;
+    match ::= "match", expression, "with", \{match case\}-;
+\end{bnfgrammar}`
+\end{lstlisting}
 
 \section{Operadores}
 
-A tabela \autoref{tab:operadores} apresenta todos os operadores disponíveis na
+A \autoref{tab:operadores} apresenta todos os operadores disponíveis na
 linguagem Ipe. Embora os operadores tenham uma assinatura de tipo como qualquer
 outra função, eles são usados de maneira infixa. Ou seja, o operador \texttt{+}
-possui a assinatura \texttt{Number -> Number -> Number}. Poderíamos definir uma
-função \texttt{soma} com a mesma assinatura, e usar como \texttt{soma 1 2}. Com
-os operadores, o primeiro argumento vai à esquerda do operador, e o segundo à direita,
+possui a assinatura \texttt{Number -> Number -> Number}, mas o primeiro argumento
+fica à esquerda do símbolo \texttt{+}. Poderíamos definir uma função
+\texttt{soma} com a mesma assinatura, e usar como \texttt{soma 1 2}. Com os
+operadores, o primeiro argumento vai à esquerda do operador, e o segundo à direita,
 como em \texttt{1 + 2}.
 
 \begin{table}[htb]
@@ -406,8 +523,9 @@ Podemos ver que Ipe possui um baixo número de operadores. Isso é proposital, p
 queremos que a linguagem seja o mais simples possível. Isso também é uma consequência
 de não termos o tipo booleano na linguagem.
 
-Da tabela, talvez os operadores com maior destaque são |> e <|. O \autoref{lst:pipes}
-ajuda a ilustrar o uso deles.
+Da tabela, talvez os operadores com maior destaque são |> e <|, pois estes operadores
+ajudam a criar séries de transformações, que são muito comuns em programação funcional.
+O \autoref{lst:pipes} ajuda a ilustrar o uso deles.
 
 \begin{lstlisting}[label={lst:pipes},caption={Exemplos de uso dos operadores de pipe}]
 comPipeDireito : Number -> Number -> Number -> Number
@@ -427,3 +545,36 @@ semPipe =
     \n1 n2 n3 -> operacao1 n1 (operacao2 n2 (operacao3 n3))
 \end{lstlisting}
 
+O \autoref{grammar:expression} mostra a definição de expressões em Ipe, que combinam
+operadores e chamadas de função para construir novos valores. Para facilitar a
+compreensão da gramática, ela é apresentada com recursão à esquerda.
+
+\begin{lstlisting}[label={grammar:expression},caption={Definição de expressões em EBNF},escapechar=`,numbers=none]
+`\begin{bnfgrammar}
+    expression ::= expression, "$\vert$>", expression
+                 | expression, "$<$$\vert$", expression
+                 | function
+                 | match
+                 | exponentiation;
+    ;;
+    exponentiation ::= exponentiation, "\textasciicircum", term
+                     | term;
+    ;;
+    term ::= term, ("+" $\vert$ "$-$"), factor
+           | factor;
+    ;;
+    factor ::= factor, ("\slash" $\vert$ "*"), primary
+             | primary;
+    ;;
+    primary ::= number
+              | string
+              | record
+              | variable name, \{primary\}
+              | "(", expression, ")";
+    ;;
+    variable name ::= \{uppercase identifier, "."\}, record access;
+    ;;
+    record access ::= lowercase identifier, ".", record access
+                    | lowercase identifier;
+\end{bnfgrammar}`
+\end{lstlisting}

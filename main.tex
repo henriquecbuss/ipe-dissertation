@@ -179,10 +179,10 @@ section=TITLE, % Título de seções em caixa alta
 
 
 % https://tex.stackexchange.com/questions/85113/xrightarrow-text
-\makeatletter
-\newcommand{\xRightarrow}[2][]{\ext@arrow 0359\Rightarrowfill@{#1}{#2}}
-\newcommand{\xLeftarrow}[2][]{\ext@arrow 0359\Leftarrowfill@{#1}{#2}}
-\makeatother
+% \makeatletter
+% \newcommand{\xRightarrow}[2][]{\ext@arrow 0359\Rightarrowfill@{#1}{#2}}
+% \newcommand{\xLeftarrow}[2][]{\ext@arrow 0359\Leftarrowfill@{#1}{#2}}
+% \makeatother
 
 % https://tex.stackexchange.com/questions/32208/footnote-runs-onto-second-page
 \interfootnotelinepenalty=10000
@@ -251,17 +251,16 @@ section=TITLE, % Título de seções em caixa alta
 \printbibliography[title=\lang{REFERENCES}{REFERÊNCIAS}]
 \endgroup
 
-% TODO - Adicionar apêndices
 % % Inicia os apêndices
-% \begin{apendicesenv}
-%     % Imprime uma página indicando o início dos apêndices
-%     \ifforcedinclude\else\partapendices\fi
-%     \setlength\beforechapskip{50pt}
-%     \setlength\midchapskip{20pt}
-%     \setlength\afterchapskip{20pt}
+\begin{apendicesenv}
+    % Imprime uma página indicando o início dos apêndices
+    \ifforcedinclude\else\partapendices\fi
+    \setlength\beforechapskip{50pt}
+    \setlength\midchapskip{20pt}
+    \setlength\afterchapskip{20pt}
 
-%     \include{aftertext/apendice_a}
-% \end{apendicesenv}
+    \include{aftertext/apendice_sintaxe}
+\end{apendicesenv}
 
 % TODO - Adicionar anexos
 % % Inicia os anexos

@@ -1,0 +1,115 @@
+\chapter{Descrição completa da sintaxe de Ipe em EBNF}
+\label{apendix:ebnf-syntax}
+
+Neste apêndice, apresentamos a sintaxe completa de
+Ipe usando a notação EBNF, de acordo com \cite{ebnfstandard} (como iremos fazer
+o nosso próprio \textit{parser}-- ao invés de usar um gerador automático --a
+gramática não será otimizada-- as ferramentas que usaremos para construir o
+\textit{parser} fazem isso por nós --, e alguns detalhes não serão apresentados,
+como espaços em branco e comentários de bloco entre tokens). O símbolo inicial
+da gramática é \texttt{file}. Discutimos mais sobre a sintaxe de Ipe no
+\autoref{chapter:specification}.
+
+\begin{bnfgrammar}
+    file ::= module, \{new type $\vert$ tl value\}-;
+    ;;
+    line comment ::= "\slash\slash", \{? qualquer caractere ?\} - "\textbackslash n", "\textbackslash n";
+    ;;
+    block comment ::= "\slash*", \{? qualquer caractere ?\} - "*\slash", "*\slash";
+    ;;
+    doc comment ::= "\slash*$\vert$", \{? qualquer caractere ?\} - "*\slash", "*\slash";
+    ;;
+    upper identifier ::= uppercase letter, \{letter $\vert$ digit $\vert$ "\_"\};
+    ;;
+    lower identifier ::= lowercase letter, \{letter $\vert$ digit $\vert$ "\_"\};
+    ;;
+    number ::= ["$-$"], \{digit\}-, [".", \{digit\}-];
+    ;;
+    string ::= "'", \{? qualquer caractere ?\} - ("\textbackslash n" $\vert$ "'"), "'";
+    ;;
+    module name ::= \{upper identifier, "."\}, upper identifier;
+    ;;
+    exported item ::= letter, \{letter $\vert$ digit $\vert$ "\_"\};
+    ;;
+    export list ::= "[", \{exported item\}-, "]";
+    ;;
+    module decl ::= "module", module name, "exports", export list;
+    ;;
+    import decl ::= "import", module name, [ "as", module name ];
+    ;;
+    module ::= module decl, [doc comment], \{import decl\};
+    ;;
+    field decl ::= lower identifier, "$\colon$", expression;
+    ;;
+    record ::= "\{", [field decl, \{",", field decl\}], "\}";
+    ;;
+    custom type ::= \{upper identifier, "."\}, upper identifier, \{any type\};
+    ;;
+    any type ::= custom type
+    | lower identifier
+    | record annotation;
+    ;;
+    record ann field ::= lower identifier, "$\colon$", any type;
+    ;;
+    record annotation ::= "\{", [record ann field, \{",", record ann field\}] "\}";
+    ;;
+    alias ::= upper identifier, parameters, "=", any type;
+    ;;
+    union ::= upper identifier, parameters, "=", \{constructor\}-;
+    ;;
+    constructor ::= "$\vert$", upper identifier, [record annotation];
+    ;;
+    new type ::= "type alias", alias
+    | "type union", union
+    | "type opaque", union;
+\end{bnfgrammar}
+\begin{bnfgrammar}
+    fn args ::= \{lowercase identifier\};
+    ;;
+    function ::= "\textbackslash", fn args, "$-$>", \{attribution\}, expression;
+    ;;
+    tl annotation ::= lowercase identifier, "$\colon$", \{any type, "$-$>"\}, any type;
+    ;;
+    attribution ::= lowercase identifier, "$=$", expression;
+    ;;
+    tl left ::= [doc comment], [tl annotation], lowercase identifier;
+    ;;
+    tl value ::= tl left "$=$", expression;
+    ;;
+    type destruct ::= \{upper identifier, "."\}, upper identifier, \{pattern\};
+    ;;
+    pattern ::= "\_"
+    | number
+    | string
+    | type destruct;
+    ;;
+    match case ::= "$\vert$", pattern, "$-$>", \{attribution\}, expression;
+    ;;
+    match ::= "match", expression, "with", \{match case\}-;
+    ;;
+    expression ::= expression, "$\vert$>", expression
+    | expression, "$<$$\vert$", expression
+        | function
+        | match
+        | exponentiation;
+        ;;
+        exponentiation ::= exponentiation, "\textasciicircum", term
+        | term;
+        ;;
+        term ::= term, ("+" $\vert$ "$-$"), factor
+        | factor;
+        ;;
+        factor ::= factor, ("\slash" $\vert$ "*"), primary
+    | primary;
+    ;;
+    primary ::= number
+    | string
+    | record
+    | variable name, \{primary\}
+    | "(", expression, ")";
+    ;;
+    variable name ::= \{uppercase identifier, "."\}, record access;
+    ;;
+    record access ::= lowercase identifier, ".", record access
+    | lowercase identifier;
+\end{bnfgrammar}
