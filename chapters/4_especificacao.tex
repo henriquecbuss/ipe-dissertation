@@ -569,8 +569,11 @@ compreensão da gramática, ela é apresentada com recursão à esquerda.
     primary ::= number
               | string
               | record
+              | list
               | variable name, \{primary\}
               | "(", expression, ")";
+    ;;
+    list ::= "[", [expression, \{",", expression\}], "]";
     ;;
     variable name ::= \{uppercase identifier, "."\}, record access;
     ;;

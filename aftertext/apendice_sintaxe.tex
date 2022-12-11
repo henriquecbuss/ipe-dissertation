@@ -105,8 +105,11 @@ da gramática é \texttt{file}. Discutimos mais sobre a sintaxe de Ipe no
     primary ::= number
     | string
     | record
+    | list
     | variable name, \{primary\}
     | "(", expression, ")";
+    ;;
+    list ::= "[", [expression, \{",", expression\}], "]";
     ;;
     variable name ::= \{uppercase identifier, "."\}, record access;
     ;;

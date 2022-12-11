@@ -15,7 +15,8 @@ Ipe oferece módulos para facilitar o uso de seus tipos primitivos (\texttt{Numb
 e \texttt{String}), além de módulos para manipulação de listas e dicionários, e
 representação de dados opcionais. Essas bibliotecas podem utilizar código Javascript
 (a linguagem alvo da compilação) para utilizar otimizações e acessar dados que
-não seriam possíveis de acessar em Ipe. Nem todas as bibliotecas serão apresentadas.
+não seriam possíveis de acessar em Ipe. Nem todas as bibliotecas serão apresentadas
+neste capítulo.
 
 \subsection{Number}
 
@@ -42,7 +43,10 @@ concatenação, busca de substrings, e conversão para maiúsculas e minúsculas
 Como Ipe não possui nenhum tipo de exceção ou \texttt{null}, os módulos \texttt{Maybe}
 e \texttt{Result} são utilizados para representar valores opcionais e resultados
 de funções que podem falhar, respectivamente. O \autoref{lst:maybe-result-def}
-mostra a definição destes tipos.
+mostra a definição destes tipos. Este módulo também possui funções para manipular
+esses tipos, como as funções \texttt{Maybe.map} e \texttt{Result.map}, que servem
+para manipular o conteúdo de um \texttt{Maybe} ou \texttt{Result}, sem precisar
+de uma expressão \texttt{match}.
 
 \begin{lstlisting}[label={lst:maybe-result-def},caption={Definição de \texttt{Maybe} e \texttt{Result}}]
 type union Maybe content =
@@ -57,7 +61,7 @@ type union Result error ok =
 
 \subsection{List}
 
-O módulo de \texttt{List} define uma das principais estruturas de dado de Ipe,
+O módulo \texttt{List} define uma das principais estruturas de dado de Ipe,
 além de funções para manipular listas. Em Ipe, listas são representadas como
 listas encadeadas, que podem ser criadas com elementos entre colchetes,
 como mostra o \autoref{lst:list-def}.

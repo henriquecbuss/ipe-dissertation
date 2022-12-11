@@ -18,8 +18,10 @@ usuários (um simples \textit{CRUD} -- \textit{Create, Read, Update, Delete}). A
 aplicação deve receber requisições HTTP para cadastrar, atualizar, deletar e listar
 usuários. Os dados devem ser enviados através do corpo da requisição, em formato
 JSON, seguindo a convenção REST. Cada usuário deve ter um id numérico (começando
-em 0, e aumentando em 1 a cada usuário cadastrado) nome e idade. A
-\autoref{tab-base-endpoints} apresenta os \textit{endpoints} da aplicação.
+em 0, e aumentando em 1 a cada usuário cadastrado), nome e idade. A
+\autoref{tab-base-endpoints} apresenta os \textit{endpoints} da aplicação, onde
+\texttt{/users/:id} significa uma rota que possui um número após \texttt{/users/},
+como em \texttt{/users/1}. Este número equivale ao id numérico de um usuário.
 
 
 \begin{table}[htb]
@@ -357,10 +359,10 @@ action CreateUserAction = do
 \section{Conclusões dos experimentos}
 
 Agora que experimentamos diferentes linguagens, com diferentes paradigmas, podemos
-recolher aprendizados e conclusões sobre o que foi visto. A seguir são apresentados
-alguns pontos vistos como importantes na linguagem Ipe. Além de analisar cada ponto
-nas linguagens vistas anteriormente, vamos discutir as lições aprendidas e usadas
-para o desenvolvimento de Ipe.
+recolher aprendizados e conclusões sobre o que foi visto. Nesta seção, discutiremos
+alguns pontos vistos como importantes para a linguagem Ipe. Além de analisar cada
+ponto nas linguagens vistas anteriormente, vamos discutir as lições aprendidas e
+usadas para o desenvolvimento de Ipe.
 
 A \autoref{tab-language-comparisons} apresenta uma comparação entre as
 principais características das linguagens vistas, além do que teremos em Ipe. As
@@ -396,7 +398,10 @@ Elixir está apenas uma posição acima de Haskell no índice de linguagens mais
 desejadas. Porém, como é uma linguagem funcional com uma barreira de entrada menor,
 é a segunda linguagem mais amada e menos temida. Ipe almeja ser uma linguagem
 puramente funcional, com tipagem forte e estática, como Haskell, mas com uma
-curva de aprendizado mais suave, como Elixir, Javascript e Python.
+curva de aprendizado mais suave, como Elixir, Javascript e Python. Desta maneira,
+desenvolvedores poderão conhecer a programação funcional fortemente tipada com
+uma barreira de entrada menor. Afinal, um dos objetivos de Ipe é ajudar a
+ensinar programação funcional com um bom sistema de tipos.
 
 
 \subsection{Simplicidade e funcionalidades}
@@ -449,10 +454,11 @@ a criar operadores arbitrários, que podem ser usados para resolver problemas
 específicos (por exemplo, um operador \texttt{.+} que faça soma de matrizes).
 Porém, isso pode afetar bastante a legibilidade do código, gerando símbolos
 imprevisíveis, específicos a uma pequena parte de uma única aplicação. Haskell
-permite a criação de operadores arbitrários, o que produz código extremamente
-difícil de se entender. Em Ipe, iremos evitar a criação de operadores arbitrários,
-dando preferência a funções nomeadas. Os únicos operadores serão definidos pela
-linguagem em si, e serão os mesmos em todos os programas Ipe.
+permite a criação de operadores arbitrários, o que, em muitos casos, produz
+código extremamente difícil de se entender. Em Ipe, iremos evitar a criação de
+operadores arbitrários, dando preferência a funções nomeadas. Os únicos operadores
+serão definidos pela linguagem em si, e serão os mesmos em todos os programas Ipe.
+Todos os operadores disponíveis em Ipe estão listados na \autoref{tab:operadores}.
 
 \subsection{Ferramentas externas}
 
@@ -468,3 +474,7 @@ desenvolvimento nos editores de código. Linguagens com tipagem dinâmica têm m
 dificuldade em sugerir compleções de código, e ferramentas como \textit{IntelliSense}.
 A exceção é Javascript, pois os editores usam informações de tipo do \textit{Typescript}
 por baixo do panos.
+
+No futuro, o compilador de Ipe pode cumprir o papel de algumas dessas ferramentas,
+como formatadores automáticos e \textit{linters}, além de disponibilizar dados
+que podem ser usados por outras ferramentas, como editores de código.

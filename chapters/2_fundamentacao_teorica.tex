@@ -6,7 +6,7 @@
 Neste capítulo, discutiremos a fundamentação teórica necessária para compreender
 o trabalho. Começaremos discutindo APIs REST na \autoref{sec:apis}, que são o
 objetivo inicial para programas escritos em Ipe. Depois, na \autoref{sec:analise_codigo_fonte},
-discutiremos o processo de compilação
+discutiremos o processo de compilação.
 
 \section{APIs e APIs REST}\label{sec:apis}
 
@@ -32,9 +32,9 @@ Ipe será uma linguagem de programação de alto nível. Isso significa que, em 
 momento, código Ipe (linguagem fonte), deve ser transformado para algo que
 computadores entendam (linguagem alvo). Esse processo se chama compilação, e é
 feito por um programa chamado compilador. No caso deste trabalho, a linguagem
-alvo é Javascript, por ser uma linguagem com ampla adoção no mercado. Quando a
-linguagem alvo também é uma linguagem de alto nível, como é o caso de Javascript,
-o processo de compilação é chamado de transpilação.
+alvo é Javascript, por ser uma linguagem com ampla adoção no mercado \cite{stackoverflowsurvey}.
+Quando a linguagem alvo também é uma linguagem de alto nível, como é o caso de
+Javascript, o processo de compilação é chamado de transpilação.
 
 Compiladores geralmente funcionam com uma série de etapas. Primeiramente, o
 código fonte é analisado e transformado em uma \textit{AST}
@@ -51,7 +51,8 @@ A análise de código fonte é a primeira etapa do processo de compilação, e s
 baseia na \textit{gramática} da linguagem. A gramática de uma linguagem é uma lista
 de regras que dita o que é válido na linguagem. Em qualquer uma das etapas, se o
 compilador encontrar um erro, ele deve abortar o processo de compilação e emitir
-uma mensagem de erro.
+uma mensagem de erro. A gramática de Ipe é explicada no \autoref{chapter:specification},
+e está disponível em sua íntegra no \autoref{apendix:ebnf-syntax}.
 
 A análise de código fonte geralmente é dividida em três etapas, descritas a seguir.
 
@@ -103,4 +104,4 @@ instrução equivalente em Javascript.
 
 Como o objetivo da linguagem é ser uma linguagem de programação para \textit{backend},
 geraremos código compatível com o ambiente Node.js, por ser a plataforma mais popular
-para desenvolvimento de aplicações \textit{backend} em Javascript.
+para desenvolvimento de aplicações \textit{backend} em Javascript \cite{stackoverflowsurvey}.
