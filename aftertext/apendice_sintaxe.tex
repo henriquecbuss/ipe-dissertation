@@ -17,7 +17,7 @@ da gramática é \texttt{file}. Discutimos mais sobre a sintaxe de Ipe no
     ;;
     block comment ::= "\slash*", \{? qualquer caractere ?\} - "*\slash", "*\slash";
     ;;
-    doc comment ::= "\slash*$\vert$", \{? qualquer caractere ?\} - "*\slash", "*\slash";
+    doc comment ::= "\slash$\vert$*", \{? qualquer caractere ?\} - "*\slash", "*\slash";
     ;;
     upper identifier ::= uppercase letter, \{letter $\vert$ digit $\vert$ "\_"\};
     ;;
@@ -70,7 +70,7 @@ da gramática é \texttt{file}. Discutimos mais sobre a sintaxe de Ipe no
     ;;
     tl annotation ::= lowercase identifier, "$\colon$", \{any type, "$-$>"\}, any type;
     ;;
-    attribution ::= lowercase identifier, "$=$", expression;
+    attribution ::= lowercase identifier, "$=$", expression, "$;$";
     ;;
     tl left ::= [doc comment], [tl annotation], lowercase identifier;
     ;;

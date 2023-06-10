@@ -22,7 +22,7 @@ tipo é o comentário de linha, que começa com \texttt{//}, e vai até o final 
 O segundo tipo é o comentário de bloco, que começa com \texttt{/*} e termina com
 \texttt{*/}, podendo conter múltiplas linhas, ou terminar na mesma linha. O último
 tipo de comentário se chama comentário de documentação, e é similar ao comentário
-de bloco, mas começa com \texttt{/*|}, e deve ser colocado na linha acima de uma
+de bloco, mas começa com \texttt{/|*}, e deve ser colocado na linha acima de uma
 definição, ou no começo do arquivo, logo após a declaração de módulo. Comentários
 de documentação têm a finalidade de documentar código, e serão usados principalmente por
 futuras ferramentas de análise de código. Por exemplo, ao manter o cursor do
@@ -38,7 +38,7 @@ não terminais que definem comentários.
    Que pode ter várias linhas
 */
 
-/*| Comentário de documentação
+/|* Comentário de documentação
     Aqui, podemos descrever uma função ou um módulo 
 */
 \end{lstlisting}
@@ -93,7 +93,7 @@ linhas, e a ordem em que as definições aparecem não importa.
 \begin{lstlisting}[label={lst:modulos3},caption={Exemplo de módulo com comentário de documentação}]
 module ModuloComComentario exports [ funcaoA ]
 
-/*| Comentário de documentação
+/|* Comentário de documentação
     Aqui podemos descrever o módulo e suas definições
 */
 \end{lstlisting}
@@ -109,7 +109,7 @@ módulos, através da palavra-chave \texttt{import}. Isso é demonstrado no
 \begin{lstlisting}[label={lst:modulos-import},caption={Exemplo de importação de módulos}]
 module Main exports [ main ]
 
-/*| Os comentários de documentação vêm antes das importações
+/|* Os comentários de documentação vêm antes das importações
 */
 
 import ModuloA
@@ -199,7 +199,7 @@ Ipe permite três modalidades de novos tipos:
           no \autoref{lst:type-alias}.
     \item Uniões: são usados para definir novos tipos, e são definidos com \texttt{type union}.
           Discutiremos mais sobre uniões no \autoref{lst:type-unions}.
-    \item Opaco: são iguais às uniões, mas suas variantes não são exportadas para
+    \item Opacos: são iguais às uniões, mas suas variantes não são exportadas para
           outros módulos, ou seja, tipos opacos só podem ser construídos e manipulados
           no módulo onde foram definidos. Tipos opacos são úteis para definir uma interface
           específica ao redor de tipos, pois seus módulos podem exportar funções
@@ -305,8 +305,8 @@ uma única forma de definir funções, como mostra o \autoref{lst:funcoes}.
 
 \begin{lstlisting}[label={lst:funcoes},caption={Exemplo de como definir uma função}]
 \argumento1 argumento2 ->
-    soma = argumento1 + argumento2
-    dobro = soma * 2
+    soma = argumento1 + argumento2;
+    dobro = soma * 2;
     dobro * 4
 \end{lstlisting}
 
@@ -315,7 +315,8 @@ Argumentos podem receber qualquer identificador que comece com uma letra minúsc
 Nas linhas 2 e 3, definimos duas variáveis locais (\texttt{soma} e \texttt{dobro}).
 Podemos incluir quantas declarações quisermos no corpo da função, mas as variáveis
 declaradas devem ter nomes únicos (não podem repetir o nome de outra variável). A
-expressão da última linha define o retorno da função (\texttt{dobro * 4}).
+expressão da última linha define o retorno da função (\texttt{dobro * 4}). Todas as linhas do corpo
+de uma função, com exceção da última, devem ser terminadas em ponto e vírgula (;).
 
 Esta sintaxe de definição de funções serve tanto para funções anônimas quanto para
 funções nomeadas. Para definir uma função nomeada, basta dar um nome à função, como
@@ -325,8 +326,8 @@ mostra o \autoref{lst:funcoes-nomeadas}.
 somaEMultiplicaPor8 : Number -> Number -> Number
 somaEMultiplicaPor8 =
     \argumento1 argumento2 ->
-        soma = argumento1 + argumento2
-        dobro = soma * 2
+        soma = argumento1 + argumento2;
+        dobro = soma * 2;
         dobro * 4
 \end{lstlisting}
 
@@ -403,11 +404,11 @@ uma expressão.
     ;;
     tl annotation ::= lowercase identifier, "$\colon$", \{any type, "$-$>"\}, any type;
     ;;
-    attribution ::= lowercase identifier, "$=$", expression;
+    attribution ::= lowercase identifier, "$=$", expression, "$;$";
     ;;
     tl left ::= [doc comment], [tl annotation], lowercase identifier;
     ;;
-    tl value ::= tl left "$=$", expression;
+    tl value ::= tl left, "$=$", expression;
 \end{bnfgrammar}`
 \end{lstlisting}
 
