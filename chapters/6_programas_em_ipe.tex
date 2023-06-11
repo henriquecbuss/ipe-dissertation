@@ -3,10 +3,10 @@
 \chapter{Programas em Ipe}\label{chapter:programas-em-ipe}
 \phantomsection
 
-Para facilitar o desenvolvimento de aplicações Ipe, todos os programas contam com
-bibliotecas padrão, que são apresentadas na \autoref{sec:libpadrao}. Ademais, para
-manter a pureza dos programas Ipe, a linguagem disponibiliza um ambiente que
-faz a gerência de efeitos colaterais, como acesso a disco ou rede. Esse ambiente
+Para facilitar o desenvolvimento de aplicações Ipe, todos os programas contam com um conjunto de
+bibliotecas padrão, também conhecidas como \textit{Prelude}, que são apresentadas na
+\autoref{sec:libpadrao}. Ademais, para manter a pureza dos programas Ipe, a linguagem disponibiliza
+um ambiente que faz a gerência de efeitos colaterais, como acesso a disco ou rede. Esse ambiente
 é apresentado na \autoref{sec:runtime}.
 
 \section{Bibliotecas padrão}\label{sec:libpadrao}
@@ -15,8 +15,10 @@ Ipe oferece módulos para facilitar o uso de seus tipos primitivos (\texttt{Numb
 e \texttt{String}), além de módulos para manipulação de listas e dicionários, e
 representação de dados opcionais. Essas bibliotecas podem utilizar código Javascript
 (a linguagem alvo da compilação) para utilizar otimizações e acessar dados que
-não seriam possíveis de acessar em Ipe. Nem todas as bibliotecas serão apresentadas
-neste capítulo.
+não seriam possíveis de acessar em Ipe. O módulo mais importante para o desenvolvimento de
+aplicativos backend que respondem a chamadas HTTP é o módulo \texttt{Http} (descrito na
+\autoref{sec:lib-http}), que possui funções que são responsáveis por montar a estrutura básica de
+uma aplicação web, como a da \autoref{sec:aplicacao-base}.
 
 \subsection{Number}
 
@@ -61,23 +63,27 @@ type union Result error ok =
 
 \subsection{List}
 
-O módulo \texttt{List} define uma das principais estruturas de dado de Ipe,
-além de funções para manipular listas. Em Ipe, listas são representadas como
-listas encadeadas, que podem ser criadas com elementos entre colchetes,
-como mostra o \autoref{lst:list-def}.
+O módulo \texttt{List} define funções para lidar com uma das principais estruturas de dado de Ipe.
+Internamente, listas são as mesmas listas usadas em Javascript, e podem ser criadas da mesma maneira:
+com colchetes. O \autoref{lst:list-def} mostra exemplos de uso de listas, e a implementação da função
+\texttt{map}, que modifica o tipo dos elementos de uma lista.
 
-\begin{lstlisting}[label={lst:list-def},caption={Definição de listas em Ipe}]
-type List element =
-| Empty
-| Node { head : element, tail : List element }
+\begin{lstlisting}[label={lst:list-def},caption={Parte do módulo de listas de Ipe}]
+split : List element -> Maybe { head : element, tail : List element }
+// A implementação de split é feita em Javascript
+// split tenta separar o primeiro elemento da lista do resto da lista
 
-map : (element -> mappedElement) -> List element -> List mappedElement
+insertLeft : element -> List element -> List element
+// A implementação de insertLeft é feita em Javascript
+// insertLeft adiciona um elemento no início da lista
+
+map : (element -> newElement) -> List element -> List newElement
 map =
     \mapFn list ->
-        match list with
-            | Empty -> Empty
-            | Node node ->
-                Node { head = mapFn node.head, tail = map mapFn node.tail }
+        match split list with
+            | Nothing -> []
+            | Just parts ->
+                insertLeft (mapFn parts.head) (map mapFn parts.tail)
 
 empty : List element
 empty = []
@@ -99,6 +105,7 @@ e simplicidade, dicionários são implementados em Javascript.
 O tipo \texttt{Subscription} é usado pelo ambiente de execução (discutido na
 \autoref{sec:runtime}) para sinalizar eventos que ocorrem no sistema e o programa
 pode escolher ser notificado para tomar alguma ação.
+
 
 \subsection{Task}
 
@@ -127,6 +134,46 @@ Para realizar os efeitos colaterais de uma \texttt{Task}, usamos a função
 \texttt{Task.perform : (Result error ok -> event) -> Task error ok -> Effect event},
 que converte uma \texttt{Task} em um \texttt{Effect}, que pode ser enviado ao
 \textit{runtime}.
+
+\subsection{JSON}
+
+Ipe tem três módulos relacionados a JSON: \texttt{Json}, \texttt{Json.Encode} e \texttt{Json.Decode}.
+O módulo \texttt{JSON} define o tipo \texttt{Json}, que representa um valor JSON. O módulo \texttt{Json.Encode}
+define funções para transformar valores de Ipe em valores JSON, e o módulo \texttt{Json.Decode} define
+funções para transformar valores JSON em valores de Ipe. O \autoref{lst:json-example} mostra um exemplo
+de uso desses módulos.
+
+\begin{lstlisting}[label={lst:json-example},caption={Exemplo de uso dos módulos de JSON}]
+type alias User =
+    { name : String
+    , age : Int
+    }
+
+encodeUser : User -> Json.Json
+encodeUser =
+    \user ->
+        Json.Encode.object
+           [ { field = "name", value = Json.Encode.string user.name }
+           , { field = "age", value = Json.Encode.int user.age }
+           ]
+
+userDecoder : Json.Decode.Decoder User
+userDecoder =
+        Json.Decode.object (\name age -> { name = name, age = age })
+        |> Json.Decode.field "name" Json.Decode.string
+        |> Json.Decode.field "age" Json.Decode.int
+
+\end{lstlisting}
+
+\subsection{Http}\label{sec:lib-http}
+
+O módulo \texttt{Http} define funções para tratar requisições HTTP que o servidor recebe. A função
+\texttt{Http.createApp} é a principal função deste módulo, e ela é usada para criar um servidor HTTP
+capaz de manter um estado (chamado de \textbf{contexto}) entre respostas. Esta função recebe
+configurações para o servidor (como a porta em que ele deve escutar), uma função para construir o
+contexto inicial, e uma função que recebe o contexto atual e uma requisição HTTP, e retorna uma
+resposta HTTP e um novo contexto. Com esta função, também é possível registrar \texttt{Subscription}s.
+O \autoref{chapter:resultados-obtidos} mostra exemplos de uso deste módulo.
 
 \section{Runtime e arquitetura}\label{sec:runtime}
 
@@ -170,13 +217,13 @@ com outras partes do computador.
 \end{figure}
 
 Para dizer ao \textit{Runtime} quais funções utilizar como funções de inicialização,
-\textit{update} e \textit{subscribe}, programas Ipe devem definir um módulo \texttt{Main},
-que exporta ao menos uma função \texttt{main}. O \autoref{lst:full-program} mostra
-um exemplo de programa completo em Ipe, que imprime na tela uma mensagem a cada
-minuto, parando depois de imprimir 10 vezes.
+\textit{update} e \textit{subscribe}, programas Ipe devem exportar uma função \texttt{main} do módulo
+apontado como módulo de entrada (geralmente \texttt{Root.ipe}). O \autoref{lst:full-program} mostra
+um exemplo de programa completo em Ipe, que imprime na tela uma mensagem a cada minuto, parando depois
+de imprimir 10 vezes.
 
 \begin{lstlisting}[label={lst:full-program},caption={Exemplo de programa completo em Ipe, que imprime na tela uma mensagem a cada minuto}]
-module Main exports [main]
+module Root exports [main]
 
 type alias Model = { messagesPrinted : Number }
 
@@ -189,9 +236,9 @@ main : { init : { model : Model, effect : Effect Event }
        , subscribe : Model -> Subscription Event
        }
 main =
-    { init: { model: { messagesPrinted = 0 }, effect: Effect.none }
-    , update: update
-    , subscribe: subscribe
+    { init = { model = { messagesPrinted = 0 }, effect = Effect.none }
+    , update = update
+    , subscribe = subscribe
     }
 
 update : Event -> Model -> { model : Model, effect : Effect Event }
@@ -199,15 +246,16 @@ update =
     \event model ->
         match event with
             | PrintMessage ->
-                { model: model
-                , effect: 
+                { model = model
+                , effect = 
                     String.fromInt model.messagesPrinted
                     |> Console.log
                     |> Task.perform PrintedMessage
                 }
             | PrintedMessage ->
-                { model: { messagesPrinted: model.messagesPrinted + 1 }
-                , effect: Effect.none
+                { model =
+                    { messagesPrinted = model.messagesPrinted + 1 }
+                , effect = Effect.none
                 }
 
 subscribe : Model -> Subscription Event
@@ -226,7 +274,7 @@ são:
     \item Ler a função \texttt{main} para saber quais são as funções \texttt{init},
           \texttt{update} e \texttt{subscribe}.
     \item Executa a função \texttt{init}, e define o estado inicial do programa
-          como o \texttt{Record} \texttt{{ messagesPrinted = 0 }}. Caso a função \texttt{init}
+          como o \texttt{Record} \texttt{\{ messagesPrinted = 0 \}}. Caso a função \texttt{init}
           retornasse um efeito colateral, o \textit{Runtime} executaria o efeito colateral.
     \item Usa o modelo inicial para executar a função \texttt{subscribe}, e
           começa a esperar por eventos.
@@ -254,3 +302,11 @@ A \autoref{fig:runtime-internals} mostra mais detalhes de como as funções \tex
 
 Podemos ver que, após a definição do modelo inicial em \texttt{init}, as funções
 \texttt{update} e \texttt{subscribe} leem o modelo, e respondem a eventos.
+
+Embora este seja o fluxo principal de execução, alguns módulos do \textit{Prelude} de Ipe podem oferecer
+funções auxiliares, que ajudam a definir o comportamento do programa, de maneira mais apropriada de
+acordo com uma certa necessidade ou contexto. Por exemplo, com \texttt{Http.createApp}, o modelo
+passa a se chamar contexto, a função \texttt{init} se chama \texttt{createContext}, e a função
+\texttt{update} é substituída pela função \texttt{handleRequest}, de forma que algumas partes do
+funcionamento do servidor são omitidas do programador final, como a \texttt{Subscription} que escuta
+por requisições HTTP, ou o efeito que envia respostas HTTP.
