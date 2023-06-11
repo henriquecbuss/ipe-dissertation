@@ -1,0 +1,106 @@
+
+\phantomsection
+
+\chapter{Construção do Compilador}\label{chapter:construcao-do-compilador}
+\phantomsection
+
+O compilador de Ipe, escrito em Haskell, é dividido em 4 partes: análise sintática e léxica,
+transformação, checagem de tipos, e emissão de código. Discutiremos cada uma dessas partes nas seções
+seguintes.  Finalmente, na \autoref{sec:processo_de_compilacao}, falaremos sobre o processo de
+compilação como um todo: como os arquivos são escaneados, e como as diferentes partes do processo se
+comunicam.
+
+\section{Análise sintática e léxica}
+
+A etapa de análise sintática e léxica é a primeira etapa do compilador Ipe. Esta etapa também é
+conhecida como a etapa de \textit{parsing}, e ela é responsável por transformar texto que representa
+um programa Ipe em um formato de árvore, que representa a gramática de Ipe. Durante esta etapa, o
+compilador verifica se todos os símbolos de entrada são válidos, ao mesmo tempo em que verifica se a
+ordem dos símbolos também é válida. Caso haja algum erro sintático ou léxico no texto analisado,
+o processo de compilação para, e o erro é reportado ao usuário.
+
+
+\section{Transformação de código}
+
+A etapa de transformação de código é responsável por passar pela árvore gerada na etapa de
+\textit{parsing} e normalizar o código e sua estrutura. Na versão inicial de Ipe, essa etapa só é
+responsável por adicionar os construtores de uniões de tipos na lista de exportação de cada módulo,
+mas outras transformações poderiam ser adicionadas no futuro, como algumas otimizações, substituições
+de variáveis por constantes, ou qualquer simplificação que torne o trabalho das próximas etapas mais
+fácil (desde que o funcionamento do código gerado não seja afetado). Como essa etapa apenas transforma
+um programa válido em outro programa válido, ela não gera erros.
+
+\section{Checagem de tipos}
+
+A checagem de tipos é a etapa que garante que um programa Ipe é seguro de se executar. Esta etapa é
+responsável por assegurar que todas as funções invocadas recebam o número de argumentos corretos, e
+que estes argumentos sejam do tipo correto, além de verificar a exaustividade de \textit{pattern matching}
+e a unicidade de \textit{pattern matching} em valores. O sistema de tipos de Ipe é baseado no sistema
+de tipos de Hindley-Milner \cite{principaltypeschemes}, e usa uma adaptação do algoritmo W \cite{understaingalgorithmw},
+com adição de uniões de tipos, tipos opacos, \textit{records} e listas.
+
+O algoritmo de checagem de tipos se baseia no conceito de unificação de tipos. A unificação de tipos
+é o processo de encontrar uma substituição para variáveis de tipos que torna dois tipos iguais. Por
+exemplo, o tipo \texttt{a -> b} pode ser unificado com o tipo \texttt{Number -> String} se a variável
+\texttt{a} for substituída por \texttt{Number}, e a variável \texttt{b} for substituída por
+\texttt{String}, assim como o tipo \texttt{Number} pode ser unificado com o tipo \texttt{Number}.
+No caso de dois tipos não poderem ser unificados (por exemplo, se tentarmos unificar \texttt{Number}
+e \texttt{String}), o compilador deve reportar um erro e abortar o processo de compilação. O algoritmo
+original é estendido, para termos suporte a uniões de tipos, tipos opacos, \textit{records} e listas,
+além de outros tipos de expressão, como definição de funções, \textit{pattern matching}, e outros
+tipos de operadores binários, como os operadores de \textit{pipe}. Seguindo este processo, o
+compilador Ipe é capaz de inferir os tipos de qualquer programa Ipe válido, de modo que anotações de
+tipo são opcionais. Porém, é recomendável que anotações de tipo sejam usadas, para gerar melhores
+mensagens de erro, e para melhor documentação do programa. Caso esta etapa seja bem sucedida, nenhuma
+saída é gerada, e o processo de compilação continua.
+
+
+\section{Emissão de código}
+
+Por fim, depois de analisar todo o código, a estrutura em árvore que representa o programa em Ipe é
+transformada em uma estrutura em árvore que representa um programa em Javascript, e esta árvore é
+transformada em texto. Cada módulo Ipe gera um arquivo Javascript com o mesmo nome, e com a extensão
+\texttt{.ipe.js}. Por exemplo, o módulo \texttt{Root.ipe} gera o arquivo \texttt{Root.ipe.js}. Como
+sabemos das etapas anteriores que o código é válido, não existe a possibilidade de gerar erros nesta
+etapa.
+
+\section{Processo de compilação}\label{sec:processo_de_compilacao}
+
+O processo de compilação é iniciado chamando um aplicativo de linha de comando (\textit{CLI}), onde
+o usuário deve indicar o arquivo de entrada do programa, que deve expor uma função chamada
+\texttt{main}. O \autoref{code:cli} mostra  um exemplo de chamada do compilador, passando
+\texttt{Root.ipe} como arquivo de entrada, e especificando o diretório \texttt{output} como diretório
+de saída (diretório onde os arquivos Javascript deverão ser gerados).
+
+\begin{lstlisting}[language=Bash,label={code:cli},caption={Chamada do aplicativo de linha de comando}]
+$ ipe build Root.ipe -o output
+\end{lstlisting}
+
+Ao executar o comando acima, o compilador irá fazer o \textit{parsing} do módulo \texttt{Root.ipe} e
+de todos os módulos que ele importa, e aplicar a etapa de transformação de código em cada um, gerando
+uma árvore de sintaxe abstrata para cada módulo. Em seguida, o compilador começa a aplicar a etapa
+de checagem de tipos, utilizando as árvores de sintaxe abstrata geradas anteriormente. A checagem de
+tipos começa pelo módulo de entrada (no exemplo, \texttt{Root.ipe}). Para cada módulo importado pelo
+arquivo sendo analisado, o compilador verifica todos os módulos que estão sendo importados:
+
+\begin{itemize}
+      \item Se o módulo importado já foi analisado, o compilador continua a checagem de tipos do módulo
+            atual.
+      \item Se o módulo importado ainda não foi analisado, o compilador analisa o módulo importado, e
+            depois continua com a checagem de tipos do módulo atual.
+\end{itemize}
+
+Os resultados da checagem de tipos são armazenados em uma tabela de símbolos. Ao terminar a checagem
+de tipos de um módulo, apenas suas definições exportadas são mantidas na tabela de símbolos global.
+Ao terminar a checagem de tipos de um módulo, o compilador já o transforma em uma representação textual
+em Javascript. Depois de checar os tipos de todos os módulos importados (direta ou indiretamente)
+pelo módulo de entrada, o compilador gera a estrutura de pastas e escreve os arquivos com o conteúdo
+em Javascript de cada módulo. Deste modo, apenas módulos que aparecem na cadeia de dependências do
+módulo de entrada são analisados e transformados em Javascript. Módulos que não são usados não são
+analisados, e portanto não são transformados em Javascript.
+
+Por fim, o compilador baixa as bibliotecas padrão (descritas na \autoref{sec:libpadrao}), definidas
+em Javascript, para que o programa possa ser executado. Para executar o programa, basta usar algum
+\textit{runtime} Javascript, como Node, Deno ou Bun. O código Javascript de algumas bibliotecas
+padrão utiliza funções oferecidas pelo Bun, portanto é recomendável utilizar Bun para executar
+programas Ipe.
