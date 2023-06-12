@@ -107,32 +107,32 @@ O tipo \texttt{Subscription} é usado pelo ambiente de execução (discutido na
 pode escolher ser notificado para tomar alguma ação.
 
 
-\subsection{Task}
+\subsection{Promise}
 
-\textit{Tasks} (ou tarefas) são funções que solicitam ações no mundo exterior para
-o ambiente de execução. Esse módulo disponibiliza funções para manipular tarefas,
-como usar o resultado de uma como entrada de outra. O \autoref{lst:task-example}
+\textit{Promises} (ou promessas) são funções que solicitam ações (tarefas) no mundo exterior para
+o ambiente de execução, e usam as \textit{Promises} nativas do Javascript. Esse módulo disponibiliza
+funções para manipular tarefas, como usar o resultado de uma como entrada de outra. O \autoref{lst:promise-example}
 mostra um exemplo de sequenciamento de tarefas.
 
-\begin{lstlisting}[label={lst:task-example},caption={Exemplo de sequenciamento de tarefas}]
-uploadFile : String -> String -> Task Error String
+\begin{lstlisting}[label={lst:promise-example},caption={Exemplo de sequenciamento de tarefas}]
+uploadFile : String -> String -> Promise String
 uploadFile =
     \fileId destinationUrl ->
         Db.getFilePathById fileId
-        |> Task.andThen File.read
-        |> Task.andThen (\fileContent -> Http.post destinationUrl { body = fileContent })
+        |> Promise.andThen File.read
+        |> Promise.andThen (\fileContent -> Http.post destinationUrl { body = fileContent })
 \end{lstlisting}
 
 A função acima recebe um identificador de arquivo e uma URL de destino, e lê
 o caminho do arquivo no banco de dados, lê o arquivo, e envia o conteúdo para
-a URL de destino. A função \texttt{Task.andThen} é usada para encadear as tarefas,
+a URL de destino. A função \texttt{Promise.andThen} é usada para encadear as tarefas,
 passando o resultado de uma para a outra. Este código é apenas um exemplo, pois
 na realidade, teríamos que lidar com erros (usando o tipo \texttt{Result}), e
 não apenas com o caso de sucesso.
 
-Para realizar os efeitos colaterais de uma \texttt{Task}, usamos a função
-\texttt{Task.perform : (Result error ok -> event) -> Task error ok -> Effect event},
-que converte uma \texttt{Task} em um \texttt{Effect}, que pode ser enviado ao
+Para realizar os efeitos colaterais de uma \texttt{Promise}, usamos a função
+\texttt{Promise.perform : (Result error ok -> event) -> Promise error ok -> Effect event},
+que converte uma \texttt{Promise} em um \texttt{Effect}, que pode ser enviado ao
 \textit{runtime}.
 
 \subsection{JSON}
@@ -200,7 +200,7 @@ pela arquitetura Elm. Programas Ipe são representados por três partes principa
 O \textit{Runtime} (ambiente de execução, em português) é o responsável por manter
 o estado do programa, e executar as funções \texttt{update} e \texttt{subscribe},
 além de executar os efeitos colaterais retornados pela função de \texttt{update}.
-O \textit{Runtime} é implementado em Javascript, e ele converte \texttt{Tasks} em
+O \textit{Runtime} é implementado em Javascript, e ele converte \texttt{Promises} em
 código Javascript, e retorna o resultado para o programa Ipe.  Similarmente, quando
 um programa Ipe adiciona uma nova \texttt{Subscription}, o \textit{Runtime} é
 responsável por gerar Javascript que avise o programa Ipe quando necessário. A
@@ -250,7 +250,7 @@ update =
                 , effect = 
                     String.fromInt model.messagesPrinted
                     |> Console.log
-                    |> Task.perform PrintedMessage
+                    |> Promise.perform PrintedMessage
                 }
             | PrintedMessage ->
                 { model =
