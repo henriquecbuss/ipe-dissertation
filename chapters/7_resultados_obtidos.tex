@@ -3,29 +3,278 @@
 \chapter{Resultados obtidos}\label{chapter:resultados-obtidos}
 \phantomsection
 
-Até agora, já analisamos algumas outras linguagens, e colhemos inspirações para
-o desenvolvimento de Ipe. Usamos estas informações no \autoref{chapter:specification}
-para definir a linguagem Ipe. Agora, vamos nos concentrar na implementação da
-linguagem de fato. Para tal, usaremos a linguagem de programação Haskell.  A
-\autoref{tab:cronograma} descreve os próximos passos para o desenvolvimento de Ipe.
+Neste capítulo, será apresentada a implementação em Ipe do sistema descrito na
+\autoref{sec:aplicacao-base}. Depois, iremos comparar alguns detalhes da implementação com as
+implementações em outras linguagens, a fim de mostrar as vantagens e desvantagens de cada uma.
 
-\begin{table}[htb]
-    \caption{Cronograma de desenvolvimento para a linguagem Ipe}
-    \label{tab:cronograma}
-    \resizebox{\textwidth}{!}{%
-        \begin{tabular}{p{9.5cm}p{4.65cm}}
-            \toprule
-            \textbf{Tarefa}                                             & \textbf{Tempo estimado para conclusão} \\
-            \midrule
-            \textit{Parsing} de código fonte                            & 2 semanas                              \\
-            Checagem de tipos                                           & 1 semana                               \\
-            Geração de código Javascript                                & 1 semana                               \\
-            Construção do \textit{Runtime} e módulos padrão             & 3 semanas                              \\
-            Construção da aplicação base em Ipe e análise de resultados & 2 semanas                              \\
-            \bottomrule
-        \end{tabular}
+\section{Implementação da Aplicação Base em Ipe}
+
+A implementação em Ipe usa várias das bibliotecas padrão de Ipe, apresentadas na \autoref{sec:libpadrao},
+com maior foco nas bibliotecas de \texttt{JSON} e \texttt{Http}, o que é comum em \textit{API}s
+\textit{REST}, por ser o principal meio de comunicação com o mundo exterior. Esta seção será dividida
+em partes menores, cada uma descrevendo uma parte da implementação. Por simplicidade, todo o código
+que será apresentado está em um único arquivo, \texttt{Root.ipe}. Para aplicações maiores, recomenda-se
+que o código seja dividido em vários arquivos diferentes. Durante a apresentação do código, partes
+que poderiam ser definidas em outros arquivos serão destacadas. Nos códigos apresentados, não serão
+mostradas as importações de módulos, que são feitas no início do arquivo, e são necessárias para
+que as funções e tipos dos módulos importados possam ser usados.
+
+\subsection{Descrição do contexto}
+
+Como a maior parte dos programas em Ipe, começamos definindo um tipo para o nosso modelo (ou contexto,
+quando usando a biblioteca \texttt{Http}). Para a aplicação base, o contexto deve saber o último
+identificador usado para um usuário, e um dicionário de usuários, como mostra o \autoref{code:context}.
+
+\begin{lstlisting}[label={code:context},caption={Definição do contexto}]
+type alias User =
+  { name : String
+  , age : Number
+  }
+
+type alias Context =
+  { lastId : Number
+  , users : Dict.Dict Number User
+  }
+\end{lstlisting}
+
+A definição do tipo \texttt{User} poderia ser feita em outro módulo, \texttt{User.ipe}, para que todas
+as suas funcionalidades (que veremos nas seções seguintes), fiquem agrupadas em um único módulo. Para
+maior segurança, o tipo \texttt{User} poderia ser definido como um tipo opaco neste outro arquivo.
+Deste modo, poderíamos controlar todas as maneiras de criar e acessar usuários, evitando que usuários
+inválidos sejam criados, como, por exemplo, usuários com idade menor do que 0, ou cujo nome é uma
+\texttt{String} vazia.
+
+\subsection{Funções de transformação de dados}
+
+Como a grande vantagem de usar Ipe é sua tipagem estática, e a expressividade de seus tipos, é ideal
+que os tipos recebidos de fora da aplicação (como em requisições \textit{HTTP}) sejam convertidos
+para tipos internos da aplicação o mais rápido possível. Similarmente, quando for necessário enviar
+dados para fora da aplicação, é ideal que os tipos internos sejam convertidos para tipos externos
+o mais tarde possível, apenas quando necessário. Para isso, usamos funções de transformação de dados,
+que convertem os tipos internos para tipos externos, e vice-versa. No caso da aplicação base, o único
+tipo externo é JSON, mas Ipe é versátil o suficiente para lidar com outros tipos de dados no futuro,
+sem muita alteração no código de usuário. O \autoref{code:decoder} mostra como transformar um JSON
+em um usuário.
+
+\begin{lstlisting}[label={code:decoder},caption={Função que transforma JSON em um usuário}]
+userDecoder : Json.Decode.Decoder User
+userDecoder =
+  Json.Decode.map2 (\name age -> { age = age, name = name })
+    (Json.Decode.field 'name' Json.Decode.string )
+    (Json.Decode.field 'age' Json.Decode.number)
+\end{lstlisting}
+
+Decodificadores (ou \textit{Decoders}, em inglês) são funções responsáveis por transformar tipos
+externos (como JSON) em tipos internos (como \texttt{User}). Eles descrevem como traduzir os dados
+para algo que Ipe entenda. No caso do \autoref{code:decoder}, o decodificador \texttt{userDecoder}
+recebe um JSON e, se o JSON tiver um campo (\textit{field}, em inglês) \texttt{name} e um campo
+\texttt{age}, que sejam uma \texttt{String} e um \texttt{Number}, respectivamente, ele usa esses valores
+para construir um \texttt{Record} com o mesmo formato de \texttt{User}. É importante ressaltar que
+esta função apenas descreve como transformar um JSON em um usuário, mas não faz a transformação em si.
+Veremos que a função \texttt{Json.Decode.parseJson} é responsável por isso. A função \texttt{userDecoder}
+poderia ser definida no arquivo \texttt{User.ipe}.
+
+\begin{lstlisting}[label={code:encoder},caption={Transformando um usuário em JSON}]
+encodeUser : { key: Number, value: User } -> Json.Value
+encodeUser = \input ->
+  Dict.empty {}
+  |> Dict.insert 'id' (Json.Encode.number input.key)
+  |> Dict.insert 'name' (Json.Encode.string input.value.name)
+  |> Dict.insert 'age' (Json.Encode.number input.value.age)
+  |> Json.Encode.object
+
+encodeUsers : Dict.Dict Number User -> Json.Value
+encodeUsers = \users ->
+  users
+  |> Dict.toList
+  |> Json.Encode.list encodeUser
+\end{lstlisting}
+
+
+O \autoref{code:encoder} mostra como transformar usuários em objetos JSON, usando codificadores (ou
+\texttt{encoders}, em inglês). Para facilitar a implementação da rota que retorna vários usuários,
+definimos também a função \texttt{encodeUsers}, que transforma um dicionário de usuários (que é o que
+temos no contexto) em um JSON. Na implementação de \texttt{encodeUser}, usamos a função
+\texttt{Json.Encode.object}, que simplesmente transforma um dicionário em um objeto JSON. Estas
+funções também poderiam ser definidas no arquivo \texttt{User.ipe}.
+
+É importante notar que a representação de um usuário em JSON (usado para se comunicar com o mundo
+externo) não necessariamente reflete a representação interna de um usuário, o que é desejável.
+Diferentes linguagens de programação têm diferentes maneiras de representar dados, e é importante
+que isto não afete a comunicação entre elas. Por exemplo, em Python, é comum usar \texttt{snake\_case},
+enquanto em Ipe, é comum usar \texttt{camelCase} para nomes de variáveis. Com a estratégia das bibliotecas
+de JSON de Ipe, podemos usar o nome que quisermos para as variáveis internas, e apenas mapeá-las
+para o nome correto quando for necessário enviar dados para fora da aplicação. Também podemos aplicar
+processamentos nos dados antes de ingeri-los para dentro de uma aplicação Ipe, como, por exemplo,
+converter uma \texttt{String} para um \texttt{type union}.
+
+\subsection{Configuração da aplicação}
+
+Agora que já definimos o contexto e as funções de transformação de dados, podemos definir a aplicação
+em si, utilizando a função \texttt{main}, que chamará a função \texttt{Http.createApp} para iniciar
+um servidor que escuta chamadas \texttt{HTTP}. O \autoref{code:main-initializer} mostra a configuração
+inicial da aplicação, como a porta em que o servidor deve escutar, e como construir o contexto inicial.
+Exploraremos o conteúdo escondido pelas reticências na \autoref{sec:routes}.
+
+\begin{lstlisting}[label={code:main-initializer},caption={Configuração inicial da aplicação}]
+main: {} -> {}
+main = \_ -> Http.createApp
+    { port = 3000
+    , createContext = \_ -> Promise.succeed
+        { lastId = 0, users = Dict.empty {} }
+    , handleRequest = \context request -> ...
     }
-\end{table}
+\end{lstlisting}
 
-Ao todo, estima-se que o desenvolvimento da linguagem Ipe levará cerca de mais 9
-semanas, ou seja, 63 dias.
+Este código diz que o servidor deve escutar na porta 3000, e que o contexto inicial deve ser um
+dicionário vazio de usuários, e inicializar o \texttt{lastId} com 0. Este \texttt{Record} segue a
+definição de \texttt{Context} do \autoref{code:context}.
+
+\subsection{Rotas}\label{sec:routes}
+
+Ipe não possui nenhum mecanismo de roteamento embutido, mas é bastante simples implementar um,
+simplesmente usando \textit{pattern matching}. Por conveniência, Ipe disponibiliza o \textit{endpoint}
+da URL requisitada como uma lista de \texttt{String}s, onde cada entrada da lista é um pedaço do
+\textit{endpoint}. Por exemplo, a URL \texttt{/users/1} seria representada como \texttt{["users", "1"]}.
+Além disso, o método da requisição é representado por uma união de tipos, como podemos ver no
+\autoref{code:routes}, que substitui as reticências do \autoref{code:main-initializer}.
+
+\begin{lstlisting}[label={code:routes},caption={Roteamento da aplicação base}]
+match request.endpoint with
+| ['users'] -> 
+  match request.method with
+    | Http.Get ->
+      Promise.succeed
+        { response =
+          context.users
+          |> encodeUsers
+          |> Http.jsonResponse
+        , newContext = context
+        }
+    
+    | Http.Post ->
+      match Json.Decode.parseJson userDecoder request.body with
+        | Ok user ->
+          Promise.succeed
+            { response = 
+              Dict.empty {}
+              |> Dict.insert 'id' (context.lastId + 1)
+              |> Json.Encode.object
+              |> Http.jsonResponse 
+            , newContext =
+              { lastId = context.lastId + 1
+              , users = Dict.insert (context.lastId + 1) user context.users 
+              }
+            }
+        
+        | Err error ->
+          Promise.succeed
+            { response = Http.jsonResponse (Json.Encode.string error)
+            , newContext = context
+            }
+
+    | _ -> Promise.succeed { response = Http.jsonResponse (Json.Encode.string '404'), newContext = context }
+
+| ['users', stringId] ->
+  match Number.fromString stringId with
+    | Nothing -> Promise.succeed { response = Http.jsonResponse (Json.Encode.string 'error: invalid ID'), newContext = context }
+    | Just id ->
+      match Dict.get id context.users with
+        | Nothing -> Promise.succeed { response = Http.jsonResponse (Json.Encode.string 'error: user not found'), newContext = context }
+        | Just user ->
+          match request.method with
+            | Http.Get ->
+              Promise.succeed
+                { response =
+                  encodeUser { key = id, value = user }
+                  |> Http.jsonResponse
+                , newContext = context
+                }
+            
+            | Http.Put ->
+              match Json.Decode.parseJson userDecoder request.body with
+                | Ok user ->
+                  Promise.succeed
+                    { response = 
+                      Dict.empty {}
+                      |> Dict.insert 'id' id
+                      |> Json.Encode.object
+                      |> Http.jsonResponse 
+                    , newContext =
+                      { lastId = context.lastId
+                      , users = Dict.insert id user context.users 
+                      }
+                    }
+        
+                | Err error ->
+                  Promise.succeed
+                    { response = Http.jsonResponse (Json.Encode.string error)
+                    , newContext = context
+                    }
+
+            
+            | Http.Delete ->
+              Promise.succeed
+                { response = Http.jsonResponse (Json.Encode.string id)
+                , newContext =
+                  { lastId = context.lastId
+                  , users = Dict.remove id context.users
+                  }
+                }
+          
+            | _ -> Promise.succeed { response = Http.jsonResponse (Json.Encode.string id), newContext = context }
+
+| _ -> Promise.succeed { response = Http.jsonResponse (Json.Encode.string '404'), newContext = context }
+\end{lstlisting}
+
+A estratégia de roteamento é fazer \texttt{pattern matching} com o \textit{endpoint} da requisição,
+e então fazer \texttt{pattern matching} com o método da requisição. Embora seja uma solução mais
+verbosa do que as outras linguagens analisadas, tudo o que está acontecendo é bastante explícito,
+a fim de ser mais fácil de compreender. Além disso, o programador é forçado a validar todos os dados
+vindos do mundo exterior, o que é uma boa prática de programação. No exemplo acima, o programador
+é obrigado a validar que o ID do usuário é um número, e que o usuário existe no contexto.
+
+Com esta estratégia de roteamento, também é bastante simples adicionar a funcionalidade de
+\textit{middleware}, que é uma função que é executada antes de um grupo qualquer de rotas (por exemplo,
+todas as rotas de usuário). Como tudo é baseado em funções e \textit{pattern matching}, basta chamar
+a função desejada no \textit{pattern matching} desejado. Esta estratégia também possibilita que o
+programador divida a lógica de roteamento de qualquer maneira que quiser.
+
+\subsection{Comparação com outras linguagens}
+
+Dentre todas as implementações, Ipe foi a linguagem que necessitou de mais linhas escritas (um total
+de 132, contando com espaços em branco), embora linguagens que usam \textit{frameworks} com geração
+de código (C\#, Elixir e Haskell) para iniciar novos projetos tenham vários arquivos gerados, resultando
+em um número de linhas de código total muito maior, o que pode ser intimidante para programadores
+que não conhecem a linguagem ou o \textit{framework}.
+
+Ipe também não possui nenhuma função ou decorador específico para definir rotas da aplicação, o que
+pode resultar em código mais verboso, como podemos ver no \autoref{code:routes}. Porém, esta
+estratégia de roteamento é bastante simples de entender, e é bastante flexível, permitindo que o
+programador divida a lógica de roteamento da maneira que quiser. Além disso, em rotas com parâmetros
+(como \texttt{/users/:id}), todas as outras linguagens dependem em definir uma \textit{string} com esse
+parâmetro, e depois recebê-lo através de uma variável. Esta abordagem é bastante suscetível a erros
+de nomeação, ou aceitar menos ou mais parâmetros do que o esperado. Em Ipe, um simples \textit{pattern
+    matching} é responsável por perceber que a variável existe na URL, e capturá-la em uma variável.
+
+É muito mais simples iniciar um projeto em Ipe do que em qualquer uma das linguagens analisadas. Todas
+as outras linguagens requerem a instalação do compilador ou interpretador da linguagem, além do processo
+de escolha de \textit{framework}, e a instalação do \textit{framework} escolhido, ou de sua ferramenta
+de geração de código. Para iniciar um projeto de API em Ipe, basta instalar seu compilador e um ambiente
+de execução Javascript, e escrever um arquivo \texttt{.ipe}, sem a necessidade de qualquer configuração
+adicional.
+
+Além disso, por conta de seu sistema de tipos, é muito difícil que um programa encontre um erro que
+o faça parar de funcionar em tempo de execução, pois Ipe obriga o programador em pensar em casos de
+erro. Isto é bastante diferente de linguagens sem tipagem estática (Python, Javascript e Elixir), e
+também é melhor do que Haskell, que, embora sua ótima tipagem estática, ainda permite que o programador
+ignore casos de entrada inválida. E, diferente de todas as outras linguagens, Ipe não possui o conceito
+de erros, fazendo com que estes casos sejam lidados explicitamente, e impedindo a chance de um erro
+não ser pego (geralmente com blocos \texttt{try/catch}).
+
+Desta forma, embora Ipe possa ser mais verbosa e devagar de se escrever do que outras linguagens,
+ela é mais segura, e mais simples de se iniciar um projeto. Além disso, Ipe é capaz de prover mais
+garantias de funcionamento, o que é desejável para aplicações \textit{backend}, que comumente têm a
+necessidade de funcionar indefinidamente. Ainda, assim como Elm, aplicações Ipe têm a tendência de
+seguirem uma estrutura geral parecida com outras aplicações Ipe, o que facilita a compreensão de
+código escrito por outros programadores.
