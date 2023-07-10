@@ -24,14 +24,15 @@ modelar APIs, de forma que diferentes APIs tenham um formato padrão. Geralmente
 APIs usam o formato JSON (\textit{JavaScript Object Notation}) para representar
 dados.
 
-O foco inicial de Ipe é desenvolver APIs REST.
+O foco inicial de Ipe é desenvolver APIs REST, ou seja, aplicações escritas em  Ipe devem ser capazes
+de escutar por requisições HTTP e respondê-las, usando o formato JSON, seguindo o padrão REST.
 
 \section{Análise de código fonte}\label{sec:analise_codigo_fonte}
 
 Ipe será uma linguagem de programação de alto nível. Isso significa que, em algum
 momento, código Ipe (linguagem fonte), deve ser transformado para algo que
 computadores entendam (linguagem alvo). Esse processo se chama compilação, e é
-feito por um programa chamado compilador. No caso deste trabalho, a linguagem
+feito por um programa chamado compilador \cite{dragonbook}. No caso deste trabalho, a linguagem
 alvo é Javascript, por ser uma linguagem com ampla adoção no mercado \cite{stackoverflowsurvey}.
 Quando a linguagem alvo também é uma linguagem de alto nível, como é o caso de
 Javascript, o processo de compilação é chamado de transpilação.
@@ -40,12 +41,14 @@ Compiladores geralmente funcionam com uma série de etapas. Primeiramente, o
 código fonte é analisado e transformado em uma \textit{AST}
 (\textit{Abstract Syntax Tree}), de forma a garantir que o código fonte é válido de
 acordo com a definição léxica e sintática da linguagem fonte. Este processo é
-chamado de \textit{parsing}. Em seguida, a \textit{AST} é analisada para fazer
-a checagem de tipos (ou \textit{type checking}, em inglês).  Depois disso,
-opcionalmente, são aplicadas transformações no código. Por exemplo, o compilador
-pode realizar otimizações, ou remover código não utilizado. Por fim, a AST e o
-código fonte são usados para produzir código na linguagem alvo. Vamos discutir
-cada uma dessas etapas em maiores detalhes nas seções a seguir.
+chamado de \textit{parsing}, e discutiremos ele na \autoref{sec:parsing}. Em seguida, a \textit{AST}
+é analisada para fazer a checagem de tipos (ou \textit{type checking}, em inglês), o que faz parte
+da análise semântica, discutida na \autoref{sec:semantic}. Depois disso,
+opcionalmente, são aplicadas transformações no código. Por exemplo, o compilador pode realizar
+otimizações, ou remover código não utilizado. Estas transformações são discutidas na
+\autoref{sec:transformations}. Por fim, a AST e o código fonte são usados para produzir código na
+linguagem alvo. A geração de código da linguagem alvo é discutida na \autoref{sec:code_generation}.
+\cite{dragonbook}
 
 A análise de código fonte é a primeira etapa do processo de compilação, e se
 baseia na \textit{gramática} da linguagem. A gramática de uma linguagem é uma lista
@@ -56,12 +59,12 @@ e está disponível em sua íntegra no \autoref{apendix:ebnf-syntax}.
 
 A análise de código fonte geralmente é dividida em três etapas, descritas a seguir.
 
-\subsection{Parsing}
+\subsection{Parsing}\label{sec:parsing}
 
 O \textit{parsing} é a primeira etapa da análise de código fonte. Nesta etapa,
 transformamos código em linguagem fonte para uma estrutura que o compilador
 entenda. Normalmente, o código é representado em formato de árvore. Nesta etapa
-da compilação estão as análises léxica e sintática.
+da compilação estão as análises léxica e sintática. \cite{dragonbook}
 
 \subsubsection{Análise léxica}
 
@@ -77,7 +80,7 @@ A análise sintática recebe como entrada a lista de tokens gerada pela análise
 léxica, e verifica se a sequência de tokens é válida de acordo com a gramática da
 linguagem. Nesse processo, os tokens são organizados em formato de árvore.
 
-\subsection{Análise semântica}
+\subsection{Análise semântica}\label{sec:semantic}
 
 A análise semântica usa os dados obtidos pelas etapas anteriores para verificar se
 o código fonte é válido de acordo com a semântica da linguagem. Por exemplo, é
@@ -85,7 +88,7 @@ nessa etapa em que o compilador realiza a checagem de tipos, e verifica se todas
 as variáveis usadas no programa foram declaradas.
 
 
-\subsection{Transformações de código}
+\subsection{Transformações de código}\label{sec:transformations}
 
 A análise de código fonte gera dados sobre o programa fonte (tabelas e árvores que
 representam o programa). Durante o processo de compilação, é possível realizar
@@ -93,7 +96,7 @@ transformações no código fonte, de forma a otimizar o programa, ou remover c�
 não utilizado. Por simplicidade, Ipe não fará nenhuma otimização.
 
 
-\subsection{Geração de código}
+\subsection{Geração de código}\label{sec:code_generation}
 
 A etapa de geração de código é a etapa final do processo de compilação. Nessa
 etapa, o compilador gera o código alvo a partir dos dados gerados pelas etapas

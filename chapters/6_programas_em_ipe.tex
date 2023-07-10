@@ -18,7 +18,10 @@ representação de dados opcionais. Essas bibliotecas podem utilizar código Jav
 não seriam possíveis de acessar em Ipe. O módulo mais importante para o desenvolvimento de
 aplicativos backend que respondem a chamadas HTTP é o módulo \texttt{Http} (descrito na
 \autoref{sec:lib-http}), que possui funções que são responsáveis por montar a estrutura básica de
-uma aplicação web, como a da \autoref{sec:aplicacao-base}.
+uma aplicação web, como a da \autoref{sec:aplicacao-base}. A maior parte das bibliotecas padrão de
+Ipe são apenas interfaces (compostas de tipos e funções) para funções Javascript, que são definidas
+estaticamente (ao invés de em tempo de compilação), de modo que o compilador apenas precisa saber os
+tipos das funções, e não suas implementações.
 
 \subsection{Number}
 
@@ -98,7 +101,8 @@ singleton =
 
 Dicionários são coleções de chave-valor dinâmicos. O módulo \texttt{Dict} define
 o tipo \texttt{Dict} e funções para manipular dicionários. Por questões de performance
-e simplicidade, dicionários são implementados em Javascript.
+e simplicidade, dicionários são implementados em Javascript, e Ipe disponibiliza funções e tipos que
+possibilitam a interação com dicionários Javascript em programas Ipe.
 
 \subsection{Subscription}
 
@@ -172,7 +176,7 @@ O módulo \texttt{Http} define funções para tratar requisições HTTP que o se
 capaz de manter um estado (chamado de \textbf{contexto}) entre respostas. Esta função recebe
 configurações para o servidor (como a porta em que ele deve escutar), uma função para construir o
 contexto inicial, e uma função que recebe o contexto atual e uma requisição HTTP, e retorna uma
-resposta HTTP e um novo contexto. Com esta função, também é possível registrar \texttt{Subscription}s.
+resposta HTTP e um novo contexto. Com esta função, também é possível registrar \texttt{Subscriptions}.
 O \autoref{chapter:resultados-obtidos} mostra exemplos de uso deste módulo.
 
 \section{Runtime e arquitetura}\label{sec:runtime}

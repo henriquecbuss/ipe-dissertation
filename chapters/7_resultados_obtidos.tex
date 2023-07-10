@@ -255,7 +255,7 @@ programador divida a lógica de roteamento da maneira que quiser. Além disso, e
 (como \texttt{/users/:id}), todas as outras linguagens dependem em definir uma \textit{string} com esse
 parâmetro, e depois recebê-lo através de uma variável. Esta abordagem é bastante suscetível a erros
 de nomeação, ou aceitar menos ou mais parâmetros do que o esperado. Em Ipe, um simples \textit{pattern
-    matching} é responsável por perceber que a variável existe na URL, e capturá-la em uma variável.
+  matching} é responsável por perceber que a variável existe na URL, e capturá-la em uma variável.
 
 É muito mais simples iniciar um projeto em Ipe do que em qualquer uma das linguagens analisadas. Todas
 as outras linguagens requerem a instalação do compilador ou interpretador da linguagem, além do processo
@@ -264,13 +264,16 @@ de geração de código. Para iniciar um projeto de API em Ipe, basta instalar s
 de execução Javascript, e escrever um arquivo \texttt{.ipe}, sem a necessidade de qualquer configuração
 adicional.
 
-Além disso, por conta de seu sistema de tipos, é muito difícil que um programa encontre um erro que
+Além disso, por conta de seu sistema de tipos, e por não ter uma estrutura de erros como \texttt{try/catch},
+comum na maioria das linguagens populares, é muito difícil que um programa encontre um erro que
 o faça parar de funcionar em tempo de execução, pois Ipe obriga o programador em pensar em casos de
-erro. Isto é bastante diferente de linguagens sem tipagem estática (Python, Javascript e Elixir), e
-também é melhor do que Haskell, que, embora sua ótima tipagem estática, ainda permite que o programador
-ignore casos de entrada inválida. E, diferente de todas as outras linguagens, Ipe não possui o conceito
-de erros, fazendo com que estes casos sejam lidados explicitamente, e impedindo a chance de um erro
-não ser pego (geralmente com blocos \texttt{try/catch}).
+erro, através de tipos como \texttt{Result} e \texttt{Maybe}, que devem ser tratados em checagens de
+\textit{pattern matching} antes que o dado em si possa ser usado. Isto é bastante diferente de linguagens
+sem tipagem estática (Python, Javascript e Elixir), e também é melhor do que Haskell, que, embora tenha
+uma ótima tipagem estática, ainda permite que o programador ignore casos de entrada inválida. E,
+diferente de todas as outras linguagens, Ipe não possui o conceito de erros, fazendo com que estes
+casos sejam lidados explicitamente, e impedindo a chance de um erro não ser pego (geralmente com blocos
+\texttt{try/catch}).
 
 Desta forma, embora Ipe possa ser mais verbosa e devagar de se escrever do que outras linguagens,
 ela é mais segura, e mais simples de se iniciar um projeto. Além disso, Ipe é capaz de prover mais

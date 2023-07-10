@@ -13,7 +13,7 @@ comunicam.
 \section{Análise sintática e léxica}
 
 A etapa de análise sintática e léxica é a primeira etapa do compilador Ipe. Esta etapa também é
-conhecida como a etapa de \textit{parsing}, e ela é responsável por transformar texto que representa
+conhecida como a etapa de \textit{parsing} \cite{dragonbook}, e ela é responsável por transformar texto que representa
 um programa Ipe em um formato de árvore, que representa a gramática de Ipe. Durante esta etapa, o
 compilador verifica se todos os símbolos de entrada são válidos, ao mesmo tempo em que verifica se a
 ordem dos símbolos também é válida. Caso haja algum erro sintático ou léxico no texto analisado,
@@ -58,8 +58,12 @@ saída é gerada, e o processo de compilação continua.
 \section{Emissão de código}
 
 Por fim, depois de analisar todo o código, a estrutura em árvore que representa o programa em Ipe é
-transformada em uma estrutura em árvore que representa um programa em Javascript, e esta árvore é
-transformada em texto. Cada módulo Ipe gera um arquivo Javascript com o mesmo nome, e com a extensão
+transformada em uma estrutura em árvore cujos nós são compostos de texto, que representa um programa
+em Javascript, e esta árvore é transformada em texto. Ou seja, cada nó da árvore que representa o
+programa em Ipe é transformado em um texto que representa uma parte do programa em Javascript. Após
+converter toda a árvore, os nós são juntados, de forma que gere um programa Javascript válido.
+
+Cada módulo Ipe gera um arquivo Javascript com o mesmo nome, e com a extensão
 \texttt{.ipe.js}. Por exemplo, o módulo \texttt{Root.ipe} gera o arquivo \texttt{Root.ipe.js}. Como
 sabemos das etapas anteriores que o código é válido, não existe a possibilidade de gerar erros nesta
 etapa.
@@ -76,12 +80,14 @@ de saída (diretório onde os arquivos Javascript deverão ser gerados).
 $ ipe build Root.ipe -o output
 \end{lstlisting}
 
-Ao executar o comando acima, o compilador irá fazer o \textit{parsing} do módulo \texttt{Root.ipe} e
-de todos os módulos que ele importa, e aplicar a etapa de transformação de código em cada um, gerando
-uma árvore de sintaxe abstrata para cada módulo. Em seguida, o compilador começa a aplicar a etapa
-de checagem de tipos, utilizando as árvores de sintaxe abstrata geradas anteriormente. A checagem de
-tipos começa pelo módulo de entrada (no exemplo, \texttt{Root.ipe}). Para cada módulo importado pelo
-arquivo sendo analisado, o compilador verifica todos os módulos que estão sendo importados:
+Ao executar o comando acima, o compilador irá fazer o \textit{parsing} do módulo \texttt{Root.ipe},
+utilizando a biblioteca Haskell MegaParsec, e de todos os módulos que ele importa, e aplicar a etapa
+de transformação de código em cada um, a fim de normalizar o código, gerando uma árvore de sintaxe
+abstrata para cada módulo, que facilita a aplicação das próximas etapas de compilação. Em seguida,
+o compilador começa a aplicar a etapa de checagem de tipos, utilizando as árvores de sintaxe abstrata
+geradas anteriormente, aplicando um algoritmo inspirado no Algoritmo W \cite{understaingalgorithmw}.
+A checagem de tipos começa pelo módulo de entrada (no exemplo, \texttt{Root.ipe}). Para cada módulo
+importado pelo arquivo sendo analisado, o compilador verifica todos os módulos que estão sendo importados:
 
 \begin{itemize}
       \item Se o módulo importado já foi analisado, o compilador continua a checagem de tipos do módulo
@@ -92,12 +98,14 @@ arquivo sendo analisado, o compilador verifica todos os módulos que estão send
 
 Os resultados da checagem de tipos são armazenados em uma tabela de símbolos. Ao terminar a checagem
 de tipos de um módulo, apenas suas definições exportadas são mantidas na tabela de símbolos global.
-Ao terminar a checagem de tipos de um módulo, o compilador já o transforma em uma representação textual
-em Javascript. Depois de checar os tipos de todos os módulos importados (direta ou indiretamente)
-pelo módulo de entrada, o compilador gera a estrutura de pastas e escreve os arquivos com o conteúdo
-em Javascript de cada módulo. Deste modo, apenas módulos que aparecem na cadeia de dependências do
-módulo de entrada são analisados e transformados em Javascript. Módulos que não são usados não são
-analisados, e portanto não são transformados em Javascript.
+Ao terminar a checagem de tipos de um módulo, o compilador transforma cada nó da árvore em uma
+representação textual, que corresponde a trechos de código Javascript. A árvore de texto Javascript
+então é reduzida, de seus galhos à sua raiz, juntando os nós em um programa completo em Javascript.
+Depois de checar os tipos de todos os módulos importados (direta ou indiretamente) pelo módulo de
+entrada, o compilador gera a estrutura de pastas e escreve os arquivos com o conteúdo em Javascript
+de cada módulo. Deste modo, apenas módulos que aparecem na cadeia de dependências do módulo de entrada
+são analisados e transformados em Javascript. Módulos que não são usados não são analisados, e
+portanto não são transformados em Javascript.
 
 Por fim, o compilador baixa as bibliotecas padrão (descritas na \autoref{sec:libpadrao}), definidas
 em Javascript, para que o programa possa ser executado. Para executar o programa, basta usar algum

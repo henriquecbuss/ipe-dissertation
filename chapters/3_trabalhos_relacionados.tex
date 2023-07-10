@@ -6,8 +6,14 @@
 Neste capítulo, vamos explorar outras linguagens usadas para desenvolvimento \textit{backend},
 construindo uma aplicação simples em cada uma delas. O objetivo é comparar funcionalidades,
 padrões de projeto, sintaxe das linguagens, e outras características. Para selecionar
-as linguagens, vamos nos basear em índices de uso e satisfação de linguagens. Cada
-linguagem será apresentada em uma subseção, e os critérios de escolha das linguagens
+as linguagens, vamos nos basear em índices de uso e satisfação de linguagens, como \cite{tiobeindex}
+e \cite{stackoverflowsurvey}. Principalmente em relação a \cite{stackoverflowsurvey}, classificaremos
+linguagens em relação ao seu nível de \textit{amor}, \textit{temor}, e \textit{desejo}. Destes, os
+níveis de amor e temor se referem ao quanto uma linguagem é amada ou temida por programadores que as
+usam, enquanto o nível de desejo mede o quanto programadores que não usam uma linguagem gostariam de
+usá-la.
+
+Cada linguagem será apresentada em uma subseção, e os critérios de escolha das linguagens
 serão especificados na subseção que as apresenta.
 
 \section{Aplicação base}\label{sec:aplicacao-base}
@@ -160,7 +166,7 @@ public class UserController : ControllerBase
 \end{lstlisting}
 
 Como C\# é uma linguagem fortemente orientada a objetos, o \textit{framework} ASP.NET
-faz forte uso classes, objetos e herança, além de também usar \textit{decorators}.
+faz forte uso de classes, objetos e herança, além de também usar \textit{decorators}.
 O corpo das requisições é obtido automaticamente como um parâmetro do método que
 responde à requisição, o que também pode ser confuso.
 
@@ -336,7 +342,7 @@ O \textit{framework} escolhido foi o IHP, que, similarmente ao Phoenix do Elixir
 usa ferramentas de geração de código para gerar a maior parte do código necessário
 de uma aplicação. Ao invés de usar \textit{macros}, o IHP usa tipos polimórficos
 e outros recursos da linguagem para diminuir repetição de código. Haskell é
-famosa por ser difícil de aprender e usar, e o uso extensivo de recursos avançados
+famosa por ser difícil de aprender \cite{haskellintroduction}, e o uso extensivo de recursos avançados
 da linguagem tornam o código gerado pelo IHP difícil de entender.
 
 O \autoref{code:haskellcreate} apresenta a implementação do método de criação de
@@ -369,19 +375,19 @@ principais características das linguagens vistas, além do que teremos em Ipe. 
 subseções seguintes discutem alguns aspectos gerais das linguagens em maiores detalhes.
 
 \begin{table}[htb]
-  \caption{Principais características das linguagens analisadas e de Ipe}
+  \caption{Principais características das linguagens analisadas e de Ipe. O nível de temor, determinado por \cite{stackoverflowsurvey}, mede o quão temida é a linguagem.}
   \label{tab-language-comparisons}
   \resizebox{\textwidth}{!}{%
     \begin{tabular}{p{2.50cm}p{4.00cm}p{2.50cm}p{5.25cm}}
       \toprule
-      \textbf{Linguagem} & \textbf{Paradigma principal}             & \textbf{Tipagem} & \textbf{Nível de temor \cite{stackoverflowsurvey}} \\
+      \textbf{Linguagem} & \textbf{Paradigma principal}             & \textbf{Tipagem} & \textbf{Nível de temor} \\
       \midrule
-      Python             & OO                                       & Dinâmica         & 32,66\%                                            \\
-      C\#                & OO                                       & Estática         & 36,61\%                                            \\
-      Javascript         & OO com protótipos e elementos funcionais & Dinâmica         & 38,54\%                                            \\
-      Elixir             & Funcional                                & Dinâmica         & 24,54\%                                            \\
-      Haskell            & Puramente funcional                      & Estática         & 43,56\%                                            \\
-      Ipe                & Puramente funcional                      & Estática         & --                                                 \\
+      Python             & OO                                       & Dinâmica         & 32,66\%                 \\
+      C\#                & OO                                       & Estática         & 36,61\%                 \\
+      Javascript         & OO com protótipos e elementos funcionais & Dinâmica         & 38,54\%                 \\
+      Elixir             & Funcional                                & Dinâmica         & 24,54\%                 \\
+      Haskell            & Puramente funcional                      & Estática         & 43,56\%                 \\
+      Ipe                & Puramente funcional                      & Estática         & --                      \\
       \bottomrule
     \end{tabular}
   }
@@ -391,9 +397,9 @@ Podemos ver na \autoref{tab-language-comparisons} que Javascript possui um alto 
 provavelmente se dá pelo fato do seu sistema de tipos ser dinâmico e fraco, pois,
 na mesma pesquisa, o nível de temor de Typescript é 12 pontos percentuais menor
 (26,54\%). Haskell é extremamente temida, mas ao mesmo tempo, é a 16\textordfeminine{}
-linguagem mais desejada. Estima-se que isso seja culpa da grande complexidade da
+linguagem mais desejada. Estima-se que isso seja influência da grande complexidade da
 linguagem, e sua curva de aprendizado íngreme -- muitas pessoas querem conhecer
-a programação funcional, mas encontram grande dificuldade em aprender Haskell.
+a programação funcional, mas encontram grande dificuldade em aprender Haskell \cite{haskellintroduction}.
 Elixir está apenas uma posição acima de Haskell no índice de linguagens mais
 desejadas. Porém, como é uma linguagem funcional com uma barreira de entrada menor,
 é a segunda linguagem mais amada e menos temida. Ipe almeja ser uma linguagem
@@ -409,9 +415,10 @@ ensinar programação funcional com um bom sistema de tipos.
 Linguagens mais maduras ou mais antigas tendem a ter várias funcionalidades, e
 cada funcionalidade pode ter mais de uma forma de ser usada. Por exemplo, em
 Javascript uma variável pode ser definida com \texttt{var}, \texttt{let} ou
-\texttt{const}, e funções podem ser criadas com a palavra reservada \texttt{function}
-ou em formato de \textit{arrow function}. Isso pode ser confuso para quem está
-aprendendo a linguagem, além de gerar divisões entre os usuários da linguagem.
+\texttt{const} (onde cada uma destas palavras-chave definem um comportamento diferente para a variável),
+e funções podem ser criadas com a palavra reservada \texttt{function} ou em formato de \textit{arrow function}.
+Isso pode ser confuso para quem está aprendendo a linguagem, além de gerar divisões entre os usuários
+da linguagem.
 
 Outro exemplo de alta complexidade é Haskell, que possui inúmeras extensões de
 linguagem, que servem para melhorar recursos da linguagem, ou adicionar novos
