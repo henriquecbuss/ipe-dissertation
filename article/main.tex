@@ -1,0 +1,237 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+\usepackage{graphicx,url}
+% \usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+% \usepackage[latin1]{inputenc}  
+\usepackage{listings}
+\lstset{
+  numbers=left,
+  stepnumber=1
+}
+\renewcommand{\lstlistingname}{Código}
+
+     
+\sloppy
+
+\title{Linguagem de Programação Ipe: Programação Puramente Funcional para APIs REST}
+
+\author{Henrique da Cunha Buss\inst{1}}
+
+
+\address{Departamento de Informática e Estatística -- Universidade Federal de Santa Catarina
+  (UFSC)\\
+  \email{henrique.buss@grad.ufsc.br}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  This paper presents Ipe, a purely functional programming language, aimed at developing
+  \textit{backend} applications for REST APIs. Ipe aims to be easy to learn and use, while providing
+  a strong and static type system, with the intention of reducing runtime errors. We compare Ipe
+  with other languages and frameworks available, to show that Ipe is a viable alternative for
+  developing \textit{backend} applications, that tries to improve in several areas in relation to
+  the alternatives.
+\end{abstract}
+
+\begin{resumo}
+  Este trabalho apresenta Ipe, uma linguagem de programação puramente funcional, voltada ao
+  desenvolvimento de aplicações \textit{backend} para APIs REST. Ipe tem como objetivo ser fácil de
+  aprender e de usar, além de fornecer um sistema de tipos forte e estático, com a intenção de diminuir
+  erros em tempo de execução. Comparamos Ipe com outras linguagens e \textit{frameworks} disponíveis,
+  para mostrar que Ipe é uma alternativa viável para o desenvolvimento de aplicações \textit{backend},
+  que tenta melhorar em várias áreas em relação às alternativas.
+\end{resumo}
+
+
+\section{Introdução}
+
+Em contraste com o paradigma de orientação a objetos, o paradigma funcional visa simplificar o modelo
+mental dos programadores, focando em funções puras, imutabilidade, e composição de funções \cite{functionalprogramming-future}.
+Embora esses conceitos possam criar programas mais robustos e mais fácies de testar, pode ser difícil
+para desenvolvedores acostumados com outros paradigmas a aprenderem esse novo modelo mental \cite{promisesoffp}.
+Não existe uma definição exata para o que é uma linguagem puramente funcional, mas elas geralmente
+têm alguns recursos em comum, como \textit{pattern matching}, funções puras (sem efeitos colaterais),
+tipagem forte e estática, e inferência de tipos. Alguns exemplos de linguagens puramente funcionais
+são \textit{Haskell} \cite{haskellintroduction} e \textit{Elm} \cite{czaplicki2012elm}.
+
+Ipe é uma linguagem de programação puramente funcional, fortemente inspirada por Elm, com o objetivo
+de ser fácil de aprender e de usar, enquanto fornece um sistema de tipos forte e estático, com a
+intenção de reduzir erros em tempo de execução. Ipe é uma linguagem de programação desenvolvida
+especificamente para o desenvolvimento de APIs REST, e por isso possui recursos que facilitam o
+desenvolvimento de aplicações \textit{backend}.
+
+
+\section{Comparação com outras linguagens} \label{sec:comparisons}
+
+A tabela \ref{tab-language-comparisons} mostra características de algumas linguagens de programação
+e de Ipe. As linguagens foram escolhidas com base na pesquisa anual do Stack Overflow \cite{stackoverflowsurvey}
+de 2022, e o índice TIOBE \cite{tiobeindex}. A tabela mostra que Ipe é uma linguagem de programação
+com características similares a Haskell, mas com o objetivo de ter um nível de temor menor.
+
+
+\begin{table}[htb]
+  \caption{Principais características das linguagens analisadas e de Ipe. O nível de temor, determinado por \cite{stackoverflowsurvey}, mede o quão temida é a linguagem.}
+  \label{tab-language-comparisons}
+  \begin{tabular}{p{2.50cm}p{5.00cm}p{2.50cm}p{3.25cm}}
+    \textbf{Linguagem} & \textbf{Paradigma principal}             & \textbf{Tipagem} & \textbf{Nível de temor} \\
+    Python             & OO                                       & Dinâmica         & 32,66\%                 \\
+    C\#                & OO                                       & Estática         & 36,61\%                 \\
+    Javascript         & OO com protótipos e elementos funcionais & Dinâmica         & 38,54\%                 \\
+    Elixir             & Funcional                                & Dinâmica         & 24,54\%                 \\
+    Haskell            & Puramente funcional                      & Estática         & 43,56\%                 \\
+    Ipe                & Puramente funcional                      & Estática         & --                      \\
+  \end{tabular}
+\end{table}
+
+Para a comparação das linguagens, foi desenvolvida uma aplicação base, que consiste em um sistema de
+cadastro de usuários (um simples \textit{CRUD -- Create, Read, Update, Delete}). A aplicação deve receber
+requisições HTTP para cadastrar, atualizar, deletar e listar usuários. Os dados devem ser enviados
+através do corpo da requisição, em formato JSON, seguindo a convenção REST. Cada usuário deve ter um
+\texttt{id} numérico, nome e idade. A tabela \ref{tab-base-endpoints} mostra todos os \textit{endpoints}
+da aplicação base.
+
+
+\begin{table}[htb]
+  \caption[\textit{Endpoints} da aplicação base]{\textit{Endpoints} da aplicação base}
+  \label{tab-base-endpoints}
+  \begin{tabular}{p{2.85cm}p{2.85cm}p{7.55cm}}
+    \textbf{Método HTTP} & \textbf{\textit{Endpoint}} & \textbf{Descrição}                                                                         \\
+    GET                  & /users                     & Lista todos os usuários cadastrados                                                        \\
+    GET                  & /users/:id                 & Lista um usuário específico                                                                \\
+    POST                 & /users                     & Cria um novo usuário. O nome e a idade devem ser enviados no corpo da requisição           \\
+    PUT                  & /users/:id                 & Atualiza um usuário específico. O nome e a idade devem ser enviados no corpo da requisição \\
+    DELETE               & /users/:id                 & Deleta um usuário específico                                                               \\
+  \end{tabular}
+\end{table}
+
+A aplicação desenvolvida em Python (usando o \textit{framework} Flask) possui um único arquivo, o
+que possibilita prototipação rápida, e a complexidade inicial é baixa. Porém, Flask usa
+\textit{decorators}, que podem ser confusos para iniciantes. A solução em C\#, também faz uso de
+\textit{decorators}, além de organizar o código em vários arquivos, o que pode ser confuso para
+iniciantes, embora a maioria tenha sido gerado automaticamente por ferramentas de geração de código.
+C\# utiliza classes e métodos dessas classes para definir os \textit{endpoints}. A solução em
+Javascript (usando o \textit{framework} Express) é similar à solução em Python, mas sem \textit{decorators}.
+A desvantagem de Javascript é que endpoints são definidos com \textit{strings}, que devem ser
+mantidas consistentes com os nomes das variáveis acessadas nos parâmetros da requisição. Elixir também
+utiliza bastante geração de código com o \textit{framework} Phoenix. Embora Elixir seja uma linguagem
+funcional, ela não possui um sistema de tipos estático, o que pode levar a erros em tempo de execução.
+Por fim, Haskell, a única linguagem funcional com sistema de tipos estático da lista, também faz forte
+uso de ferramentas de geração de código, e possui uma curva de aprendizado muito íngreme, o que pode
+ser um problema para iniciantes.
+
+A partir destes experimentos, podemos concluir que, se Ipe tem como objetivo ser uma linguagem simples,
+de fácil aprendizado, devemos evitar \textit{decorators} e ferramentas de geração de código. Além disso,
+Ipe deve possuir um sistema de tipos estático, para evitar erros em tempo de execução. A solução
+proposta para Ipe é utilizar \textit{pattern matching} para definir os \textit{endpoints}, e
+utilizar \textit{encoders} e \textit{decoders} para interagir com dados do mundo externo (JSON). Além
+disso, para manter a simplicidade, é importante que Ipe ofereça um único jeito de fazer cada coisa,
+para evitar confusão.
+
+\section{Especificação da Linguagem}
+
+Programas Ipe são compostos por módulos, onde cada módulo representa um arquivo. Arquivos Ipe têm a
+extensão \texttt{.ipe}, ou seja, um arquivo chamado \texttt{Main.ipe} representa o módulo \texttt{Main}.
+Cada módulo pode exportar funções e tipos, que podem ser utilizadas por outros módulos.
+
+O código \ref{lst:language-example} mostra um exemplo de código Ipe. Nele, podemos ver que todos os
+módulos começam com a sua definição, junto com as funções e tipos que o módulo exporta. Ipe suporta
+comentários de linha, bloco e documentação, que são ignorados pelo compilador, mas podem ser usados
+para outras ferramentas de desenvolvimento. Ipe também suporta importação de módulos, que podem ser
+usados para reutilizar código. Um dos pontos fortes de Ipe é seu sistema de tipos, que permite que o
+programador defina novos tipos, através dos comandos \texttt{type union}, \texttt{type opaque} e
+\texttt{type alias}. Uniões de tipo (como mostrado nas linhas 8 a 10) possibilitam a modelagem de
+problemas complexos, e são uma das principais ferramentas de Ipe. Ipe também suporta a definição de
+funções, que podem ter uma anotação de tipo (linha 12), embora não seja necessário, pois Ipe consegue
+inferir os tipos de qualquer programa válido. Além disso, Ipe também tem suporte a \textit{pattern matching},
+como mostram as linhas 14 a 17.
+
+\begin{lstlisting}[label={lst:language-example},caption={Exemplo de  código Ipe}]
+module Pasta1.Pasta2.Modulo exports [ sayHello ]
+
+// Comentario de linha
+/* Comentario de bloco */
+
+import Database.User as DbUser
+
+type union User =
+  | Guest
+  | LoggedIn { name : String }
+
+sayHello : User -> String
+sayHello =
+  \user ->
+    match user with
+      | Guest -> 'Hello there!'
+      | User user -> String.concat [ 'Hello, ', user.name ]
+\end{lstlisting}
+
+\section{Processo de compilação}
+
+O compilador Ipe, escrito em Haskell, é dividido em 4 partes: análise sintática e léxica,
+transformação, checagem de tipos, e emissão de código. A etapa de análise sintática e léxica, também
+conhecida como \textit{parsing} \cite{dragonbook}, é responsável por transformar texto que representa
+um programa Ipe em um formato de árvore, que representa a gramática de Ipe.
+
+Na etapa seguinte, de transformação de código, o compilador normaliza a árvore gerada na etapa anterior,
+para facilitar as etapas seguintes. No futuro, algumas otimizações, como substituições de variáveis
+por constantes, poderiam ser realizadas nessa etapa. A etapa de checagem de tipos é responsável por
+garantir que todos os tipos das funções se alinham, e que não há erros de tipos. Esta etapa é a que
+garante a maior parte da segurança de Ipe. O algoritmo de checagem de tipos é baseado em uma adaptação
+do algoritmo W \cite{understaingalgorithmw}, com adição de uniões de tipos, tipos opacos,
+\textit{records} e listas. Nesta etapa também é realizada a inferência de tipos de funções que não
+possuem anotações de tipos. Na última etapa, de emissão de código, o compilador transforma cada folha
+da árvore Ipe em trechos de código Javascript, e vai juntando os nós, das folhas à raiz.
+
+Para começar o processo de compilação, basta invocar o aplicativo de linha de comando de Ipe,
+informando o arquivo de entrada, que deve conter uma função \texttt{main}. O compilador de Ipe apenas
+irá gerar código para o módulo de entrada, e os módulos importados (direta ou indiretamente) por ele.
+Desta forma, módulos que nunca são importados não serão compilados. Como etapa final do processo de
+compilação, o compilador baixa as bibliotecas padrão de Ipe, que são apenas interfaces (funções e tipos)
+que representam as funções e tipos nativos de Javascript. Estas interfaces são utilizadas para
+realizar a checagem de tipos, e são removidas do código final. Para executar o programa resultante,
+basta utilizar algum \textit{runtime} Javascript, como Node, Deno ou Bun. O código Javascript
+de algumas bibliotecas padrão (como \texttt{Http}) utiliza funções oferecidas pelo Bun, portanto
+é recomendável utilizar Bun para executar programas Ipe.
+
+\section{Resultados obtidos}
+
+Embora o código em Ipe que representa uma solução à aplicação base, proposta na seção \ref{sec:comparisons},
+seja a solução com maior número de linhas de código (sem considerar soluções geradas automaticamente),
+Ipe fornece maior segurança na validação dos dados, através de \textit{encoders} e \textit{decoders}
+JSON, além de maior simplicidade na definição de rotas, que usa \textit{pattern matching} para extrair
+variáveis, ao invés de definir uma \textit{string} que define a rota, ou simplesmente receber como
+parâmetro em uma função. Com estes recursos, somos forçados a pensar sobre casos de erro, e lidar com
+casos em que os dados recebidos não possuem o formato esperado. Além disso, a estratégia de roteamento
+com \textit{pattern matching} possibilita a implementação de \textit{middlewares}, que podem agilizar
+o desenvolvimento. No caso de Ipe, basta definir uma função, e chamá-la dentro da função que define
+o tratamento de rotas.
+
+\section{Conclusões}
+
+Ipe é uma linguagem de programação funcional, que busca ser simples e fácil de se usar, ao mesmo
+tempo em que tenta capturar erros em tempo de compilação, diminuindo erros em tempo de execução. Ipe
+é uma linguagem que busca ser útil no mundo real, e que pode ser usada para criar aplicações backend
+modernas, com fortes garantias de tipos e sem efeitos colaterais. Ipe é uma linguagem que busca ser
+fácil de se aprender, por ter poucos conceitos e uma sintaxe simples.
+
+Desta forma, Ipe apresenta vantagens sobre linguagens como Javascript e Python, que possuem tipagem
+fraca e dinâmica, e também apresenta vantagens sobre linguagens como Haskell, que, embora possuam um
+sistema de tipos forte e estático, possuem uma alta barreira de entrada. Ipe também precisa de menos código do que frameworks
+como ASP.NET, que se baseiam em ferramentas de geração automática de código, o que pode facilitar a
+manutenção de aplicações Ipe. Por outro lado, Ipe ainda é uma linguagem nova, e precisa de mais
+testes e mais aplicações reais para que possamos ter certeza de que ela cumpre seus objetivos. Além
+disso, Ipe ainda precisa de mais ferramentas, como integração com editores de código, bibliotecas de
+teste, e um gerenciador de pacotes, para que a comunidade possa compartilhar código mais facilmente.
+Ipe também não apresenta otimizações de código, o que pode ser um problema para aplicações backend,
+que muitas vezes precisam de alta performance para atender várias requisições simultaneamente.
+
+
+\bibliographystyle{sbc}
+\bibliography{../aftertext/references}
+
+\end{document}
